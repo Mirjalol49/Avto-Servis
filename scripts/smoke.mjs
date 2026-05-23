@@ -74,17 +74,18 @@ server.stderr.on("data", (chunk) => {
 });
 
 try {
-  await waitForServer();
-  await expectOk("/api/health", "database");
-  await expectOk("/login", "Email");
-  await expectRedirectToLogin("/dashboard");
+await waitForServer();
+await expectOk("/api/health", "database");
+await expectOk("/login", "Email");
+await expectRedirectToLogin("/");
+await expectRedirectToLogin("/dashboard");
 
-  console.log(
-    JSON.stringify(
-      {
-        status: "ok",
-        checked: ["/api/health", "/login", "/dashboard"],
-      },
+console.log(
+  JSON.stringify(
+    {
+      status: "ok",
+      checked: ["/api/health", "/login", "/", "/dashboard"],
+    },
       null,
       2
     )
