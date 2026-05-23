@@ -24,7 +24,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardAction,
@@ -43,6 +43,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatCurrency } from "@/lib/money";
+import { cn } from "@/lib/utils";
 
 type JobPartRow = {
   id: string;
@@ -203,14 +204,13 @@ export function JobCostingSection({
               </span>
             </div>
             {invoiceId ? (
-              <Button
-                type="button"
-                className="mt-4 w-full"
-                render={<Link href={`/dashboard/jobs/${jobId}/invoice`} />}
+              <Link
+                href={`/dashboard/jobs/${jobId}/invoice`}
+                className={cn(buttonVariants(), "mt-4 w-full")}
               >
                 <FileTextIcon data-icon="inline-start" />
                 View Invoice
-              </Button>
+              </Link>
             ) : status === "COMPLETED" ? (
               <Button
                 type="button"

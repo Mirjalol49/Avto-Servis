@@ -27,12 +27,24 @@ function requiredFirstEnv(names: string[]) {
 
 export function getSupabasePublicClient() {
   if (!publicClient) {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey =
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl) {
+      throw new Error("Missing environment variable: NEXT_PUBLIC_SUPABASE_URL");
+    }
+
+    if (!supabaseKey) {
+      throw new Error(
+        "Missing environment variable: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY or NEXT_PUBLIC_SUPABASE_ANON_KEY"
+      );
+    }
+
     publicClient = createClient(
-      requiredEnv("NEXT_PUBLIC_SUPABASE_URL"),
-      requiredFirstEnv([
-        "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
-        "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-      ])
+      supabaseUrl,
+      supabaseKey
     );
   }
 

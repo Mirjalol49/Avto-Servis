@@ -25,14 +25,13 @@ export function InvoiceActionsBar({ invoiceId, jobOrderId }: InvoiceActionsBarPr
         <PrinterIcon data-icon="inline-start" />
         Print
       </Button>
-      <Button
-        type="button"
-        variant="outline"
-        render={<Link href={`/dashboard/jobs/${jobOrderId}`} />}
+      <Link
+        href={`/dashboard/jobs/${jobOrderId}`}
+        className={cn(buttonVariants({ variant: "outline" }))}
       >
         <Undo2Icon data-icon="inline-start" />
         Back to Job
-      </Button>
+      </Link>
     </div>
   );
 }
