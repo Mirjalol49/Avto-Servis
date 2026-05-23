@@ -14,6 +14,7 @@
     "verify:env": "node scripts/verify-env.mjs",
     "verify:prod": "npm run verify:env && npm run verify && npm run smoke && npm run verify:supabase",
     "smoke": "node scripts/smoke.mjs",
+    "smoke:prod": "node scripts/production-smoke.mjs",
     "verify:supabase": "node scripts/verify-supabase.mjs"
   },
   "prisma": {

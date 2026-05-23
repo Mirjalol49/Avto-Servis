@@ -6,6 +6,10 @@ const rawUzbekPhoneRegex = /^998\d{9}$/;
 export function normalizeUzbekPhone(value: string) {
   const compact = value.replace(/\s/g, "");
 
+  if (rawUzbekPhoneRegex.test(compact)) {
+    return compact;
+  }
+
   if (!uzbekPhoneRegex.test(compact)) {
     return null;
   }

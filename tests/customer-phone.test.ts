@@ -17,6 +17,15 @@ describe("customer phone helpers", () => {
     assert.equal(parsed.phone, "998901234567");
   });
 
+  it("accepts already-normalized stored phone digits", () => {
+    const parsed = customerSchema.parse({
+      name: "Ali Valiyev",
+      phone: "998901234567",
+    });
+
+    assert.equal(parsed.phone, "998901234567");
+  });
+
   it("rejects phone values outside +998XXXXXXXXX format", () => {
     const result = customerSchema.safeParse({
       name: "Ali Valiyev",
