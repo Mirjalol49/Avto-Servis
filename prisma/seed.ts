@@ -1,6 +1,9 @@
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
+import { PrismaClient } from "@prisma/client";
+import { hash } from "bcryptjs";
+
 function loadEnvFile(filePath: string) {
   if (!existsSync(filePath)) {
     return;
@@ -31,9 +34,6 @@ function loadEnvFile(filePath: string) {
 
 loadEnvFile(resolve(process.cwd(), ".env.local"));
 loadEnvFile(resolve(process.cwd(), ".env"));
-
-const { PrismaClient } = await import("@prisma/client");
-const { hash } = await import("bcryptjs");
 
 const prisma = new PrismaClient();
 

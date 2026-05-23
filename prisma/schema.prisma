@@ -123,7 +123,7 @@ model Invoice {
 model User {
   id       String   @id @default(cuid())
   name     String
-  email    String
+  email    String   @unique
   password String
   role     UserRole
 }
