@@ -1,0 +1,151 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum JobStatus {
+  WAITING
+  DIAGNOSED
+  APPROVED
+  IN_PROGRESS
+  COMPLETED
+  DELIVERED
+}
+
+enum JobPhotoType {
+  BEFORE
+  AFTER
+}
+
+enum UserRole {
+  ADMIN
+  RECEPTIONIST
+  MASTER
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  cars      Car[]
+}
+
+model Car {
+  id             String     @id @default(cuid())
+  plateNumber    String     @unique
+  plateImageUrl  String
+  attachmentUrl  String?
+  attachmentType String?
+  customerId     String
+  customer       Customer   @relation(fields: [customerId], references: [id])
+  jobOrders      JobOrder[]
+  createdAt      DateTime   @default(now())
+}
+
+model JobOrder {
+  id                 String     @id @default(cuid())
+  carId              String
+  car                Car        @relation(fields: [carId], references: [id])
+  masterId           String?
+  master             Master?    @relation(fields: [masterId], references: [id])
+  status             JobStatus
+  problemDescription String
+  diagnosisNotes     String?
+  estimatedCost      Decimal?
+  serviceFee         Decimal    @default(0)
+  totalCost          Decimal?
+  approvedByCustomer Boolean    @default(false)
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  photos             JobPhoto[]
+  parts              JobPart[]
+  invoice            Invoice?
+}
+
+model JobPhoto {
+  id         String       @id @default(cuid())
+  jobOrderId String
+  jobOrder   JobOrder     @relation(fields: [jobOrderId], references: [id])
+  url        String
+  type       JobPhotoType
+  createdAt  DateTime     @default(now())
+}
+
+model Part {
+  id        String    @id @default(cuid())
+  name      String
+  stockQty  Int       @default(0)
+  unitPrice Decimal
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  jobParts  JobPart[]
+}
+
+model JobPart {
+  id         String   @id @default(cuid())
+  jobOrderId String
+  jobOrder   JobOrder @relation(fields: [jobOrderId], references: [id])
+  partId     String
+  part       Part     @relation(fields: [partId], references: [id])
+  quantity   Int
+  unitPrice  Decimal
+}
+
+model Master {
+  id             String     @id @default(cuid())
+  name           String
+  phone          String
+  specialization String?
+  isActive       Boolean    @default(true)
+  jobOrders      JobOrder[]
+  createdAt      DateTime   @default(now())
+}
+
+model Invoice {
+  id            String    @id @default(cuid())
+  jobOrderId    String    @unique
+  jobOrder      JobOrder  @relation(fields: [jobOrderId], references: [id])
+  partsTotal    Decimal
+  serviceFee    Decimal
+  totalAmount   Decimal
+  isPaid        Boolean   @default(false)
+  paymentMethod String?
+  paidAt        DateTime?
+  createdAt     DateTime  @default(now())
+}
+
+model User {
+  id       String   @id @default(cuid())
+  name     String
+  email    String
+  password String
+  role     UserRole
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  entity    String
+  entityId  String
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  @@index([entity, entityId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model RealtimeEvent {
+  id        String   @id @default(cuid())
+  topic     String   @default("dashboard")
+  createdAt DateTime @default(now())
+
+  @@index([topic, createdAt])
+}
