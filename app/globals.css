@@ -13,39 +13,39 @@
 @layer base {
   :root {
     color-scheme: dark;
-    --background: 11 19 38;
-    --foreground: 218 226 253;
-    --card: 23 31 51;
-    --card-foreground: 218 226 253;
-    --popover: 34 42 61;
-    --popover-foreground: 218 226 253;
-    --primary: 208 188 255;
-    --primary-foreground: 35 0 92;
-    --secondary: 49 49 192;
-    --secondary-foreground: 225 224 255;
-    --muted: 19 27 46;
-    --muted-foreground: 174 182 210;
-    --accent: 45 52 73;
-    --accent-foreground: 233 221 255;
-    --destructive: 255 180 171;
-    --destructive-foreground: 105 0 5;
-    --border: 73 68 84;
-    --input: 28 36 56;
-    --ring: 208 188 255;
-    --chart-1: 208 188 255;
-    --chart-2: 192 193 255;
-    --chart-3: 219 184 255;
-    --chart-4: 16 185 129;
-    --chart-5: 245 158 11;
+    --background: 8 15 29;
+    --foreground: 226 232 240;
+    --card: 17 24 39;
+    --card-foreground: 226 232 240;
+    --popover: 25 34 49;
+    --popover-foreground: 226 232 240;
+    --primary: 148 163 184;
+    --primary-foreground: 8 15 29;
+    --secondary: 51 65 85;
+    --secondary-foreground: 226 232 240;
+    --muted: 15 23 42;
+    --muted-foreground: 148 163 184;
+    --accent: 30 41 59;
+    --accent-foreground: 226 232 240;
+    --destructive: 248 113 113;
+    --destructive-foreground: 127 29 29;
+    --border: 51 65 85;
+    --input: 30 41 59;
+    --ring: 125 143 176;
+    --chart-1: 148 163 184;
+    --chart-2: 122 162 199;
+    --chart-3: 181 154 89;
+    --chart-4: 95 155 139;
+    --chart-5: 180 123 85;
     --radius: 0.5rem;
-    --sidebar: 6 14 32;
-    --sidebar-foreground: 218 226 253;
-    --sidebar-primary: 208 188 255;
-    --sidebar-primary-foreground: 35 0 92;
-    --sidebar-accent: 23 31 51;
-    --sidebar-accent-foreground: 233 221 255;
-    --sidebar-border: 49 57 77;
-    --sidebar-ring: 208 188 255;
+    --sidebar: 9 16 30;
+    --sidebar-foreground: 226 232 240;
+    --sidebar-primary: 148 163 184;
+    --sidebar-primary-foreground: 8 15 29;
+    --sidebar-accent: 17 24 39;
+    --sidebar-accent-foreground: 226 232 240;
+    --sidebar-border: 51 65 85;
+    --sidebar-ring: 125 143 176;
   }
   * {
     @apply border-border outline-ring;
@@ -54,8 +54,8 @@
     @apply bg-background text-foreground;
     min-height: 100vh;
     background:
-      linear-gradient(180deg, rgba(49, 57, 77, 0.3) 0%, rgba(11, 19, 38, 0.1) 34%, rgba(6, 14, 32, 0.95) 100%),
-      #0b1326;
+      linear-gradient(180deg, rgba(30, 41, 59, 0.28) 0%, rgba(8, 15, 29, 0.14) 36%, rgba(5, 10, 20, 0.96) 100%),
+      #080f1d;
   }
   html {
     @apply font-sans;
@@ -70,7 +70,7 @@
     letter-spacing: 0;
   }
   ::selection {
-    background: rgba(208, 188, 255, 0.28);
+    background: rgba(148, 163, 184, 0.32);
     color: #ffffff;
   }
 }

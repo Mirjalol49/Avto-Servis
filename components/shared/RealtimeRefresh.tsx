@@ -3,8 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 
-import { getSupabasePublicClient } from "@/lib/supabase";
-
 function decodeBase64Url(value: string) {
   const base64 = value.replace(/-/g, "+").replace(/_/g, "/");
   const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, "=");
@@ -52,7 +50,8 @@ export function RealtimeRefresh() {
       return undefined;
     }
 
-    const supabase = getSupabasePublicClient();
+    let disposed = false;
+    let cleanupChannel: (() => void) | null = null;
 
     const scheduleRefresh = () => {
       if (refreshTimer.current !== null) {
@@ -65,26 +64,39 @@ export function RealtimeRefresh() {
       }, 300);
     };
 
-    const channel = supabase
-      .channel("dashboard-refresh")
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "RealtimeEvent",
-          filter: "topic=eq.dashboard",
-        },
-        scheduleRefresh
-      )
-      .subscribe();
+    void import("@/lib/supabase").then(({ getSupabasePublicClient }) => {
+      if (disposed) {
+        return;
+      }
+
+      const supabase = getSupabasePublicClient();
+      const channel = supabase
+        .channel("dashboard-refresh")
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "RealtimeEvent",
+            filter: "topic=eq.dashboard",
+          },
+          scheduleRefresh
+        )
+        .subscribe();
+
+      cleanupChannel = () => {
+        void supabase.removeChannel(channel);
+      };
+    });
 
     return () => {
+      disposed = true;
+
       if (refreshTimer.current !== null) {
         window.clearTimeout(refreshTimer.current);
       }
 
-      void supabase.removeChannel(channel);
+      cleanupChannel?.();
     };
   }, [router]);
 

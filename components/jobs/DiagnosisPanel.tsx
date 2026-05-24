@@ -137,7 +137,7 @@ export function DiagnosisPanel({
 
       {master ? (
         <div className="flex items-center gap-3 rounded-lg border border-white/10 bg-muted/30 p-3">
-          <div className="flex size-9 items-center justify-center rounded-full border border-primary/20 bg-primary/10 font-medium text-primary">
+          <div className="flex size-9 items-center justify-center rounded-full border border-white/10 bg-white/5 font-medium text-slate-200">
             {master.name.charAt(0).toUpperCase()}
           </div>
           <div>

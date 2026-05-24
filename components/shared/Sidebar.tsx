@@ -55,7 +55,7 @@ export function Sidebar() {
               className={cn(
                 "flex h-10 items-center gap-2 rounded-lg border border-transparent px-3 text-sm font-medium text-muted-foreground transition-all hover:border-white/10 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                 active &&
-                  "border-primary/25 bg-primary/10 text-primary shadow-[0_0_28px_rgba(208,188,255,0.12)]"
+                  "border-white/15 bg-white/10 text-slate-200 shadow-[0_8px_20px_rgba(0,0,0,0.12)]"
               )}
             >
               <Icon className="size-4" />
@@ -84,7 +84,7 @@ export function MobileSidebarNav() {
             className={cn(
               "flex min-w-20 flex-col items-center justify-center gap-1 rounded-lg border border-transparent px-2 py-2 text-[11px] font-medium text-muted-foreground transition-all hover:border-white/10 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
               active &&
-                "border-primary/25 bg-primary/10 text-primary shadow-[0_0_28px_rgba(208,188,255,0.12)]"
+                "border-white/15 bg-white/10 text-slate-200 shadow-[0_8px_20px_rgba(0,0,0,0.12)]"
             )}
           >
             <Icon className="size-4" />

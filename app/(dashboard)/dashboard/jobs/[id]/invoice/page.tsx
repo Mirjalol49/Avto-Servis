@@ -50,7 +50,7 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
       <div className="rounded-xl border border-white/10 bg-card/80 p-6 backdrop-blur-xl print:border-0">
         <header className="flex flex-col gap-4 border-b border-white/10 pb-6 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex size-12 items-center justify-center rounded-lg border border-primary/25 bg-primary/10 text-lg font-bold text-primary shadow-[0_0_28px_rgba(208,188,255,0.18)]">
+            <div className="flex size-12 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-lg font-bold text-slate-200 shadow-[0_8px_20px_rgba(0,0,0,0.16)]">
               AS
             </div>
             <div>

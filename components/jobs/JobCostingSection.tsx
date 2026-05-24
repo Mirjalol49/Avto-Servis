@@ -185,7 +185,7 @@ export function JobCostingSection({
             </Table>
           </div>
 
-          <div className="h-fit rounded-lg border border-primary/20 bg-primary/10 p-4 shadow-[0_0_32px_rgba(208,188,255,0.08)] xl:sticky xl:top-20">
+          <div className="h-fit rounded-lg border border-white/10 bg-white/5 p-4 shadow-[0_12px_28px_rgba(0,0,0,0.16)] xl:sticky xl:top-20">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Parts Total</span>
               <span className="font-medium">{formatCurrency(partsTotal, currency)}</span>

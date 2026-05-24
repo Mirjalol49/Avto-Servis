@@ -6,11 +6,11 @@ import { cn } from "@/lib/utils";
 
 const statusClasses: Record<JobStatus, string> = {
   WAITING: "border-white/15 bg-white/5 text-muted-foreground",
-  DIAGNOSED: "border-blue-400/25 bg-blue-400/10 text-blue-200",
-  APPROVED: "border-amber-400/25 bg-amber-400/10 text-amber-200",
-  IN_PROGRESS: "border-orange-400/25 bg-orange-400/10 text-orange-200",
-  COMPLETED: "border-emerald-400/25 bg-emerald-400/10 text-emerald-200",
-  DELIVERED: "border-primary/25 bg-primary/10 text-primary",
+  DIAGNOSED: "border-sky-300/20 bg-sky-300/10 text-sky-200",
+  APPROVED: "border-amber-300/20 bg-amber-300/10 text-amber-200",
+  IN_PROGRESS: "border-orange-300/20 bg-orange-300/10 text-orange-200",
+  COMPLETED: "border-emerald-300/20 bg-emerald-300/10 text-emerald-200",
+  DELIVERED: "border-slate-300/20 bg-slate-300/10 text-slate-200",
 };
 
 export function JobStatusBadge({ status }: { status: JobStatus }) {

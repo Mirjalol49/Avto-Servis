@@ -10,7 +10,7 @@ import Link from "next/link";
 
 import { getDashboardStats } from "@/actions/dashboard";
 import { DashboardAutoRefresh } from "@/components/dashboard/DashboardAutoRefresh";
-import { DashboardCharts } from "@/components/dashboard/DashboardCharts";
+import { DashboardChartsLoader } from "@/components/dashboard/DashboardChartsLoader";
 import { JobStatusBadge } from "@/components/jobs/JobStatusBadge";
 import { MasterAvatar } from "@/components/masters/MasterAvatar";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -35,7 +35,7 @@ function KpiCard({ title, value, subtitle, icon: Icon }: KpiCardProps) {
         <CardTitle className="font-mono text-xs font-medium uppercase tracking-[0.05em] text-muted-foreground">
           {title}
         </CardTitle>
-        <div className="flex size-9 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-primary shadow-[0_0_24px_rgba(208,188,255,0.16)]">
+        <div className="flex size-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-slate-300 shadow-[0_8px_20px_rgba(0,0,0,0.16)]">
           <Icon className="size-4" />
         </div>
       </CardHeader>
@@ -91,7 +91,7 @@ export default async function DashboardPage() {
         />
       </div>
 
-      <DashboardCharts
+      <DashboardChartsLoader
         revenueByDay={stats.revenueByDay}
         jobsByStatus={jobsByStatus}
         currency={currency}

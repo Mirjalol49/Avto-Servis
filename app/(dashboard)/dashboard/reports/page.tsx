@@ -28,7 +28,7 @@ function ReportCard({ title, value, description, icon: Icon }: ReportCardProps) 
           </CardTitle>
           <CardDescription>{description}</CardDescription>
         </div>
-        <div className="flex size-9 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-primary shadow-[0_0_24px_rgba(208,188,255,0.16)]">
+        <div className="flex size-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-slate-300 shadow-[0_8px_20px_rgba(0,0,0,0.16)]">
           <Icon className="size-4" />
         </div>
       </CardHeader>
