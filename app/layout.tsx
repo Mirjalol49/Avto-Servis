@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Hanken_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -37,7 +38,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${hanken.variable} ${inter.variable} ${jetbrainsMono.variable}`}
+      className={`${hanken.variable} ${inter.variable} ${jetbrainsMono.variable} ${GeistSans.variable}`}
     >
       <body className="antialiased bg-background text-on-surface min-h-screen">
         <ThemeProvider

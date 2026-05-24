@@ -28,6 +28,7 @@ const securityHeaders = [
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   poweredByHeader: false,
+  transpilePackages: ["geist"],
   async headers() {
     return [
       {

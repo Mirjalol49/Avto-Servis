@@ -12,7 +12,7 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ["var(--font-inter)", "Inter", "Arial", "sans-serif"],
-        mono: ["var(--font-jetbrains-mono)", "JetBrains Mono", "ui-monospace", "monospace"],
+        mono: ["var(--font-geist-sans)", "var(--font-jetbrains-mono)", "Geist", "ui-monospace", "monospace"],
         heading: ["var(--font-hanken)", "Hanken Grotesk", "Inter", "Arial", "sans-serif"],
       },
       colors: {
