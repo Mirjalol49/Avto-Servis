@@ -3,6 +3,7 @@ import { Hanken_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const hanken = Hanken_Grotesk({
   subsets: ["latin"],
@@ -35,13 +36,21 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${hanken.variable} ${inter.variable} ${jetbrainsMono.variable}`}
     >
-      <body className="antialiased">
-        <TooltipProvider>
-          {children}
-          <Toaster />
-        </TooltipProvider>
+      <body className="antialiased bg-background text-on-surface min-h-screen">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <TooltipProvider>
+            {children}
+            <Toaster />
+          </TooltipProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

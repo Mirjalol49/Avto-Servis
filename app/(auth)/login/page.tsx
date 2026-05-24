@@ -20,9 +20,9 @@ export default async function LoginPage() {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md border-white/10">
+      <Card className="w-full max-w-md">
         <CardHeader>
-          <div className="mb-2 flex size-11 items-center justify-center rounded-lg border border-white/10 bg-white/5 font-heading text-base font-bold text-slate-200 shadow-[0_8px_20px_rgba(0,0,0,0.16)]">
+          <div className="mb-2 flex size-11 items-center justify-center rounded-lg border border-border bg-muted font-heading text-base font-bold text-primary shadow-sm">
             AS
           </div>
           <CardTitle className="text-2xl">AutoServis</CardTitle>
