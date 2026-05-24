@@ -33,14 +33,14 @@ export const dynamic = "force-dynamic";
 
 function stockClassName(stockQty: number) {
   if (stockQty < 5) {
-    return "text-red-700";
+    return "text-rose-200";
   }
 
   if (stockQty < 10) {
-    return "text-yellow-700";
+    return "text-amber-200";
   }
 
-  return "text-green-700";
+  return "text-emerald-200";
 }
 
 export default async function PartsPage({ searchParams }: PartsPageProps) {
@@ -80,7 +80,7 @@ export default async function PartsPage({ searchParams }: PartsPageProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold text-red-700">
+            <div className="font-heading text-2xl font-semibold text-rose-200">
               {summary.lowStock}
             </div>
           </CardContent>
@@ -102,7 +102,7 @@ export default async function PartsPage({ searchParams }: PartsPageProps) {
       <PartSearch defaultValue={search} />
 
       {parts.length > 0 ? (
-        <div className="rounded-xl bg-card ring-1 ring-foreground/10">
+        <div className="overflow-hidden rounded-xl border border-white/10 bg-card/80">
           <Table>
             <TableHeader>
               <TableRow>
@@ -116,7 +116,7 @@ export default async function PartsPage({ searchParams }: PartsPageProps) {
               {parts.map((part) => (
                 <TableRow
                   key={part.id}
-                  className={cn(part.stockQty < 5 && "bg-red-50 hover:bg-red-50")}
+                  className={cn(part.stockQty < 5 && "bg-rose-400/10 hover:bg-rose-400/15")}
                 >
                   <TableCell className="font-medium">{part.name}</TableCell>
                   <TableCell className={cn("font-medium", stockClassName(part.stockQty))}>

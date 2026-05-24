@@ -92,7 +92,7 @@ export default async function CustomerDetailPage({
           <CardDescription>Primary contact details</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-between gap-3 rounded-lg border p-3">
+          <div className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-muted/30 p-3">
             <div>
               <div className="text-sm text-muted-foreground">Phone number</div>
               <div className="font-medium">{formatUzbekPhone(customer.phone)}</div>
@@ -159,7 +159,7 @@ export default async function CustomerDetailPage({
         </div>
 
         {jobOrders.length > 0 ? (
-          <div className="rounded-xl bg-card ring-1 ring-foreground/10">
+          <div className="overflow-hidden rounded-xl border border-white/10 bg-card/80">
             <Table>
               <TableHeader>
                 <TableRow>

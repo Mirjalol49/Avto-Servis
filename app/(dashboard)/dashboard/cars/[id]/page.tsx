@@ -103,7 +103,7 @@ export default async function CarDetailPage({ params }: CarDetailPageProps) {
             <CardContent>
               {car.attachmentUrl ? (
                 car.attachmentType === "pdf" ? (
-                  <div className="flex items-center justify-between gap-3 rounded-lg border p-3">
+                  <div className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-muted/30 p-3">
                     <div className="flex min-w-0 items-center gap-3">
                       <FileTextIcon className="text-muted-foreground" />
                       <div className="min-w-0">

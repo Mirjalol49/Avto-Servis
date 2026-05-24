@@ -79,13 +79,13 @@ export default async function MasterDetailPage({
   return (
     <div className="flex flex-col gap-6">
       {!master.isActive ? (
-        <div className="flex items-center gap-2 rounded-lg border border-yellow-200 bg-yellow-50 px-4 py-3 text-sm text-yellow-900">
+        <div className="flex items-center gap-2 rounded-lg border border-amber-400/25 bg-amber-400/10 px-4 py-3 text-sm text-amber-100">
           <AlertTriangleIcon />
           This master is currently inactive and cannot be assigned to new jobs
         </div>
       ) : null}
 
-      <div className="flex flex-col gap-4 rounded-xl bg-card p-4 ring-1 ring-foreground/10 lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex flex-col gap-4 rounded-xl border border-white/10 bg-card/80 p-4 backdrop-blur-xl lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center gap-4">
           <MasterAvatar id={master.id} name={master.name} />
           <div className="min-w-0">
@@ -95,8 +95,8 @@ export default async function MasterDetailPage({
                 variant="outline"
                 className={cn(
                   master.isActive
-                    ? "border-green-200 bg-green-50 text-green-700"
-                    : "border-red-200 bg-red-50 text-red-700"
+                    ? "border-emerald-400/25 bg-emerald-400/10 text-emerald-200"
+                    : "border-rose-400/25 bg-rose-400/10 text-rose-200"
                 )}
               >
                 {master.isActive ? "Active" : "Inactive"}
@@ -174,7 +174,7 @@ export default async function MasterDetailPage({
           </p>
         </div>
         {currentJobs.length > 0 ? (
-          <div className="rounded-xl bg-card ring-1 ring-foreground/10">
+          <div className="overflow-hidden rounded-xl border border-white/10 bg-card/80">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -232,7 +232,7 @@ export default async function MasterDetailPage({
             Completed and delivered jobs, 10 per page.
           </p>
         </div>
-        <div className="rounded-xl bg-card ring-1 ring-foreground/10">
+        <div className="overflow-hidden rounded-xl border border-white/10 bg-card/80">
           <Table>
             <TableHeader>
               <TableRow>

@@ -13,7 +13,7 @@ type InvoiceActionsBarProps = {
 
 export function InvoiceActionsBar({ invoiceId, jobOrderId }: InvoiceActionsBarProps) {
   return (
-    <div className="flex flex-wrap items-center justify-end gap-2 rounded-xl bg-card p-3 ring-1 ring-foreground/10 print:hidden">
+    <div className="flex flex-wrap items-center justify-end gap-2 rounded-xl border border-white/10 bg-card/80 p-3 backdrop-blur-xl print:hidden">
       <a
         href={`/api/invoices/${invoiceId}/pdf`}
         className={cn(buttonVariants({ variant: "outline" }))}

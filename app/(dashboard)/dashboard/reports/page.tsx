@@ -23,15 +23,17 @@ function ReportCard({ title, value, description, icon: Icon }: ReportCardProps) 
     <Card>
       <CardHeader className="flex flex-row items-center justify-between gap-3 pb-2">
         <div>
-          <CardTitle className="text-sm font-medium text-muted-foreground">
+          <CardTitle className="font-mono text-xs font-medium uppercase tracking-[0.05em] text-muted-foreground">
             {title}
           </CardTitle>
           <CardDescription>{description}</CardDescription>
         </div>
-        <Icon className="text-muted-foreground" />
+        <div className="flex size-9 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-primary shadow-[0_0_24px_rgba(208,188,255,0.16)]">
+          <Icon className="size-4" />
+        </div>
       </CardHeader>
       <CardContent>
-        <div className="text-3xl font-semibold">{value}</div>
+        <div className="font-heading text-3xl font-bold">{value}</div>
       </CardContent>
     </Card>
   );
@@ -124,7 +126,7 @@ export default async function ReportsPage() {
             {stats.topMasters.length > 0 ? (
               <div className="space-y-3">
                 {stats.topMasters.map((master, index) => (
-                  <div key={master.id} className="rounded-lg border p-3">
+                  <div key={master.id} className="rounded-lg border border-white/10 bg-muted/30 p-3">
                     <div className="flex items-center justify-between gap-3">
                       <div className="min-w-0">
                         <div className="text-sm font-medium">
@@ -145,7 +147,7 @@ export default async function ReportsPage() {
                 ))}
               </div>
             ) : (
-              <div className="rounded-lg border p-6 text-center text-sm text-muted-foreground">
+              <div className="rounded-lg border border-white/10 bg-muted/30 p-6 text-center text-sm text-muted-foreground">
                 No completed master jobs this month.
               </div>
             )}

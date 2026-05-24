@@ -1,16 +1,15 @@
 "use client";
 
 import type { JobStatus } from "@prisma/client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
+  Area,
+  AreaChart,
   CartesianGrid,
   Cell,
   Legend,
-  Line,
-  LineChart,
   Pie,
   PieChart,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
@@ -38,14 +37,62 @@ type DashboardChartsProps = {
   currency: string;
 };
 
-const statusColors: Record<JobStatus, string> = {
-  WAITING: "#6b7280",
-  DIAGNOSED: "#2563eb",
-  APPROVED: "#ca8a04",
-  IN_PROGRESS: "#ea580c",
-  COMPLETED: "#16a34a",
-  DELIVERED: "#9333ea",
+type ChartSize = {
+  width: number;
+  height: number;
 };
+
+const statusColors: Record<JobStatus, string> = {
+  WAITING: "#958ea0",
+  DIAGNOSED: "#60a5fa",
+  APPROVED: "#f59e0b",
+  IN_PROGRESS: "#fb923c",
+  COMPLETED: "#10b981",
+  DELIVERED: "#d0bcff",
+};
+
+function formatAxisValue(value: number) {
+  if (value >= 1_000_000) {
+    return `${Number((value / 1_000_000).toFixed(1))}M`;
+  }
+
+  if (value >= 1_000) {
+    return `${Math.round(value / 1_000)}k`;
+  }
+
+  return String(value);
+}
+
+function useChartSize() {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [size, setSize] = useState<ChartSize>({ width: 0, height: 0 });
+
+  useEffect(() => {
+    const element = ref.current;
+
+    if (!element) {
+      return undefined;
+    }
+
+    const updateSize = () => {
+      const rect = element.getBoundingClientRect();
+
+      setSize({
+        width: Math.max(1, Math.floor(rect.width)),
+        height: Math.max(1, Math.floor(rect.height)),
+      });
+    };
+
+    updateSize();
+
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
+
+  return [ref, size] as const;
+}
 
 export function DashboardCharts({
   revenueByDay,
@@ -53,6 +100,8 @@ export function DashboardCharts({
   currency,
 }: DashboardChartsProps) {
   const [mounted, setMounted] = useState(false);
+  const [revenueChartRef, revenueChartSize] = useChartSize();
+  const [statusChartRef, statusChartSize] = useChartSize();
   const pieData = jobsByStatus.map((item) => ({
     name: jobStatusLabels[item.status],
     value: item.count,
@@ -70,18 +119,40 @@ export function DashboardCharts({
           <CardTitle>Revenue Last 30 Days</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-80 min-w-0">
-            {mounted ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={revenueByDay} margin={{ left: 8, right: 16, top: 8 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="label" tickLine={false} axisLine={false} />
+          <div ref={revenueChartRef} className="h-80 min-w-0">
+            {mounted && revenueChartSize.width > 1 ? (
+                <AreaChart
+                  data={revenueByDay}
+                  height={revenueChartSize.height}
+                  margin={{ left: 8, right: 16, top: 8 }}
+                  width={revenueChartSize.width}
+                >
+                  <defs>
+                    <linearGradient id="revenueFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#d0bcff" stopOpacity={0.34} />
+                      <stop offset="95%" stopColor="#d0bcff" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid stroke="rgba(218,226,253,0.1)" strokeDasharray="3 3" vertical={false} />
+                  <XAxis
+                    dataKey="label"
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fill: "rgb(var(--muted-foreground))", fontSize: 12 }}
+                  />
                   <YAxis
                     tickLine={false}
                     axisLine={false}
-                    tickFormatter={(value) => formatCurrency(Number(value), currency)}
+                    tick={{ fill: "rgb(var(--muted-foreground))", fontSize: 12 }}
+                    tickFormatter={(value) => formatAxisValue(Number(value))}
                   />
                   <Tooltip
+                    contentStyle={{
+                      background: "rgb(var(--popover))",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      borderRadius: "12px",
+                      color: "rgb(var(--popover-foreground))",
+                    }}
                     formatter={(value) => [
                       formatCurrency(Number(value), currency),
                       "Revenue",
@@ -92,16 +163,17 @@ export function DashboardCharts({
                       return point?.date ?? "";
                     }}
                   />
-                  <Line
+                  <Area
                     type="monotone"
                     dataKey="revenue"
-                    stroke="var(--primary)"
-                    strokeWidth={2}
+                    stroke="#d0bcff"
+                    strokeWidth={3}
+                    fill="url(#revenueFill)"
                     dot={false}
+                    isAnimationActive={false}
                     activeDot={{ r: 5 }}
                   />
-                </LineChart>
-              </ResponsiveContainer>
+                </AreaChart>
             ) : (
               <Skeleton className="h-full w-full" />
             )}
@@ -114,26 +186,37 @@ export function DashboardCharts({
           <CardTitle>Jobs by Status</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-80 min-w-0">
-            {mounted ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
+          <div ref={statusChartRef} className="h-80 min-w-0">
+            {mounted && statusChartSize.width > 1 ? (
+                <PieChart height={statusChartSize.height} width={statusChartSize.width}>
                   <Pie
                     data={pieData}
                     dataKey="value"
                     nameKey="name"
                     innerRadius={58}
                     outerRadius={96}
+                    isAnimationActive={false}
                     paddingAngle={2}
                   >
                     {pieData.map((entry) => (
                       <Cell key={entry.status} fill={statusColors[entry.status]} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value) => [Number(value), "Jobs"]} />
-                  <Legend verticalAlign="bottom" height={48} />
+                  <Tooltip
+                    contentStyle={{
+                      background: "rgb(var(--popover))",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      borderRadius: "12px",
+                      color: "rgb(var(--popover-foreground))",
+                    }}
+                    formatter={(value) => [Number(value), "Jobs"]}
+                  />
+                  <Legend
+                    verticalAlign="bottom"
+                    height={48}
+                    wrapperStyle={{ color: "rgb(var(--muted-foreground))" }}
+                  />
                 </PieChart>
-              </ResponsiveContainer>
             ) : (
               <Skeleton className="h-full w-full" />
             )}

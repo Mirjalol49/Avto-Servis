@@ -103,7 +103,7 @@ export function JobPhotosSection({ jobId, type, photos }: JobPhotosSectionProps)
       {photos.length > 0 ? (
         <div className="grid gap-3 md:grid-cols-3">
           {photos.map((photo) => (
-            <div key={photo.id} className="group relative overflow-hidden rounded-xl border">
+            <div key={photo.id} className="group relative overflow-hidden rounded-xl border border-white/10 bg-muted/30">
               <img src={photo.url} alt={`${type.toLowerCase()} job photo`} className="aspect-square w-full object-cover" />
               <Button
                 type="button"
@@ -132,7 +132,7 @@ export function JobPhotosSection({ jobId, type, photos }: JobPhotosSectionProps)
 
       <label
         htmlFor={inputId}
-        className="flex min-h-28 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed p-4 text-center hover:bg-muted/50"
+        className="flex min-h-28 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-primary/25 bg-primary/5 p-4 text-center transition-colors hover:bg-primary/10"
         onDragOver={(event) => event.preventDefault()}
         onDrop={(event) => {
           event.preventDefault();
@@ -162,7 +162,7 @@ export function JobPhotosSection({ jobId, type, photos }: JobPhotosSectionProps)
       />
 
       {selectedFiles.length > 0 ? (
-        <div className="flex flex-col gap-2 rounded-lg border p-3">
+        <div className="flex flex-col gap-2 rounded-lg border border-white/10 bg-muted/30 p-3">
           <div className="text-sm">{selectedFiles.length} file(s) selected</div>
           {uploading ? (
             <div className="h-2 overflow-hidden rounded-full bg-muted">

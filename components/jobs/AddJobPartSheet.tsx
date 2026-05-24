@@ -127,7 +127,7 @@ export function AddJobPartSheet({ jobId, parts, currency }: AddJobPartSheetProps
                         onChange={(event) => setSearch(event.target.value)}
                       />
                     </div>
-                    <div className="max-h-64 overflow-y-auto rounded-lg border">
+                    <div className="max-h-64 overflow-y-auto rounded-lg border border-white/10 bg-muted/25">
                       {filteredParts.map((part) => {
                         const disabled = part.stockQty === 0;
                         const selected = field.value === part.id;
@@ -138,8 +138,8 @@ export function AddJobPartSheet({ jobId, parts, currency }: AddJobPartSheetProps
                             type="button"
                             disabled={disabled}
                             className={cn(
-                              "flex w-full items-center justify-between gap-3 border-b px-3 py-2 text-left text-sm last:border-b-0 hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50",
-                              selected && "bg-muted"
+                              "flex w-full items-center justify-between gap-3 border-b border-white/10 px-3 py-2 text-left text-sm last:border-b-0 hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50",
+                              selected && "bg-primary/10 text-primary"
                             )}
                             onClick={() => {
                               field.onChange(part.id);
@@ -187,7 +187,7 @@ export function AddJobPartSheet({ jobId, parts, currency }: AddJobPartSheetProps
                 <FieldError errors={[form.formState.errors.quantity]} />
               </Field>
 
-              <div className="rounded-lg border p-3">
+              <div className="rounded-lg border border-primary/20 bg-primary/10 p-3">
                 <div className="text-sm text-muted-foreground">Line total</div>
                 <div className="text-lg font-semibold">
                   {formatCurrency(lineTotal, currency)}

@@ -1,5 +1,7 @@
 import type { Config } from "tailwindcss";
 
+const rgbVar = (name: string) => `rgb(var(${name}) / <alpha-value>)`;
+
 const config: Config = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -9,56 +11,61 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-geist-sans)", "Arial", "sans-serif"],
-        mono: ["var(--font-geist-mono)", "ui-monospace", "monospace"],
-        heading: ["var(--font-geist-sans)", "Arial", "sans-serif"],
+        sans: ["var(--font-inter)", "Inter", "Arial", "sans-serif"],
+        mono: ["var(--font-jetbrains-mono)", "JetBrains Mono", "ui-monospace", "monospace"],
+        heading: ["var(--font-hanken)", "Hanken Grotesk", "Inter", "Arial", "sans-serif"],
       },
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-        border: "var(--border)",
-        input: "var(--input)",
-        ring: "var(--ring)",
+        background: rgbVar("--background"),
+        foreground: rgbVar("--foreground"),
+        border: rgbVar("--border"),
+        input: rgbVar("--input"),
+        ring: rgbVar("--ring"),
         card: {
-          DEFAULT: "var(--card)",
-          foreground: "var(--card-foreground)",
+          DEFAULT: rgbVar("--card"),
+          foreground: rgbVar("--card-foreground"),
         },
         popover: {
-          DEFAULT: "var(--popover)",
-          foreground: "var(--popover-foreground)",
+          DEFAULT: rgbVar("--popover"),
+          foreground: rgbVar("--popover-foreground"),
         },
         primary: {
-          DEFAULT: "var(--primary)",
-          foreground: "var(--primary-foreground)",
+          DEFAULT: rgbVar("--primary"),
+          foreground: rgbVar("--primary-foreground"),
         },
         secondary: {
-          DEFAULT: "var(--secondary)",
-          foreground: "var(--secondary-foreground)",
+          DEFAULT: rgbVar("--secondary"),
+          foreground: rgbVar("--secondary-foreground"),
         },
         muted: {
-          DEFAULT: "var(--muted)",
-          foreground: "var(--muted-foreground)",
+          DEFAULT: rgbVar("--muted"),
+          foreground: rgbVar("--muted-foreground"),
         },
         accent: {
-          DEFAULT: "var(--accent)",
-          foreground: "var(--accent-foreground)",
+          DEFAULT: rgbVar("--accent"),
+          foreground: rgbVar("--accent-foreground"),
         },
         destructive: {
-          DEFAULT: "var(--destructive)",
-          foreground: "var(--primary-foreground)",
+          DEFAULT: rgbVar("--destructive"),
+          foreground: rgbVar("--destructive-foreground"),
         },
         sidebar: {
-          DEFAULT: "var(--sidebar)",
-          foreground: "var(--sidebar-foreground)",
-          primary: "var(--sidebar-primary)",
-          "primary-foreground": "var(--sidebar-primary-foreground)",
-          accent: "var(--sidebar-accent)",
-          "accent-foreground": "var(--sidebar-accent-foreground)",
-          border: "var(--sidebar-border)",
-          ring: "var(--sidebar-ring)",
+          DEFAULT: rgbVar("--sidebar"),
+          foreground: rgbVar("--sidebar-foreground"),
+          primary: rgbVar("--sidebar-primary"),
+          "primary-foreground": rgbVar("--sidebar-primary-foreground"),
+          accent: rgbVar("--sidebar-accent"),
+          "accent-foreground": rgbVar("--sidebar-accent-foreground"),
+          border: rgbVar("--sidebar-border"),
+          ring: rgbVar("--sidebar-ring"),
         },
       },
       borderRadius: {
+        sm: "0.25rem",
+        DEFAULT: "0.5rem",
+        md: "0.75rem",
+        lg: "1rem",
+        xl: "1.5rem",
         "4xl": "2rem",
       },
     },

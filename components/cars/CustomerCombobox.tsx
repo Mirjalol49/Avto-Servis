@@ -73,7 +73,7 @@ export function CustomerCombobox({
       </Tooltip>
 
       {open ? (
-        <div className="absolute z-40 mt-2 w-full rounded-xl bg-popover p-2 text-popover-foreground shadow-lg ring-1 ring-foreground/10">
+        <div className="absolute z-40 mt-2 w-full rounded-xl border border-white/10 bg-popover/95 p-2 text-popover-foreground shadow-[0_24px_70px_rgba(0,0,0,0.35)] backdrop-blur-xl">
           <Input
             placeholder="Search customer"
             value={search}
@@ -86,8 +86,8 @@ export function CustomerCombobox({
                   key={customer.id}
                   type="button"
                   className={cn(
-                    "flex w-full items-center justify-between gap-2 rounded-lg px-2 py-2 text-left text-sm hover:bg-muted",
-                    value === customer.id && "bg-muted"
+                    "flex w-full items-center justify-between gap-2 rounded-lg px-2 py-2 text-left text-sm hover:bg-accent",
+                    value === customer.id && "bg-primary/10 text-primary"
                   )}
                   onClick={() => {
                     onChange(customer.id);

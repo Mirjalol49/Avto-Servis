@@ -1,12 +1,12 @@
 export const masterAvatarColors = [
-  "bg-red-100 text-red-700",
-  "bg-orange-100 text-orange-700",
-  "bg-yellow-100 text-yellow-700",
-  "bg-green-100 text-green-700",
-  "bg-cyan-100 text-cyan-700",
-  "bg-blue-100 text-blue-700",
-  "bg-violet-100 text-violet-700",
-  "bg-pink-100 text-pink-700",
+  "border border-rose-300/25 bg-rose-400/10 text-rose-100",
+  "border border-orange-300/25 bg-orange-400/10 text-orange-100",
+  "border border-amber-300/25 bg-amber-400/10 text-amber-100",
+  "border border-emerald-300/25 bg-emerald-400/10 text-emerald-100",
+  "border border-cyan-300/25 bg-cyan-400/10 text-cyan-100",
+  "border border-blue-300/25 bg-blue-400/10 text-blue-100",
+  "border border-violet-300/25 bg-violet-400/10 text-violet-100",
+  "border border-fuchsia-300/25 bg-fuchsia-400/10 text-fuchsia-100",
 ] as const;
 
 export function getMasterInitials(name: string) {

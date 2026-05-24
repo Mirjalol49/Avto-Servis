@@ -65,7 +65,7 @@ export function CarJobCombobox({ cars, value, onChange }: CarJobComboboxProps) {
       </Button>
 
       {open ? (
-        <div className="absolute z-40 mt-2 w-full rounded-xl bg-popover p-2 text-popover-foreground shadow-lg ring-1 ring-foreground/10">
+        <div className="absolute z-40 mt-2 w-full rounded-xl border border-white/10 bg-popover/95 p-2 text-popover-foreground shadow-[0_24px_70px_rgba(0,0,0,0.35)] backdrop-blur-xl">
           <Input
             placeholder="Search car or customer"
             value={search}
@@ -78,8 +78,8 @@ export function CarJobCombobox({ cars, value, onChange }: CarJobComboboxProps) {
                   key={car.id}
                   type="button"
                   className={cn(
-                    "flex w-full items-center justify-between gap-2 rounded-lg px-2 py-2 text-left text-sm hover:bg-muted",
-                    value === car.id && "bg-muted"
+                    "flex w-full items-center justify-between gap-2 rounded-lg px-2 py-2 text-left text-sm hover:bg-accent",
+                    value === car.id && "bg-primary/10 text-primary"
                   )}
                   onClick={() => {
                     onChange(car.id);

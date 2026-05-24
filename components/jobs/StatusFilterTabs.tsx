@@ -17,7 +17,7 @@ export function StatusFilterTabs({
   search,
 }: StatusFilterTabsProps) {
   const baseClasses =
-    "inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground";
+    "inline-flex h-8 items-center gap-1.5 rounded-lg border border-transparent px-2.5 text-sm font-medium text-muted-foreground transition-colors hover:border-white/10 hover:bg-accent/50 hover:text-foreground";
 
   function hrefFor(status?: JobStatus) {
     const params = new URLSearchParams();
@@ -37,10 +37,10 @@ export function StatusFilterTabs({
   const total = Object.values(counts).reduce((sum, count) => sum + count, 0);
 
   return (
-    <div className="flex flex-wrap gap-1 rounded-xl bg-card p-1 ring-1 ring-foreground/10">
+    <div className="flex flex-wrap gap-1 rounded-xl border border-white/10 bg-card/75 p-1 backdrop-blur-xl">
       <Link
         href={hrefFor()}
-        className={cn(baseClasses, !activeStatus && "bg-muted text-foreground")}
+        className={cn(baseClasses, !activeStatus && "border-primary/25 bg-primary/10 text-primary")}
       >
         All
         <Badge variant="secondary">{total}</Badge>
@@ -49,7 +49,7 @@ export function StatusFilterTabs({
         <Link
           key={status}
           href={hrefFor(status)}
-          className={cn(baseClasses, activeStatus === status && "bg-muted text-foreground")}
+          className={cn(baseClasses, activeStatus === status && "border-primary/25 bg-primary/10 text-primary")}
         >
           {jobStatusLabels[status]}
           <Badge variant="secondary">{counts[status]}</Badge>

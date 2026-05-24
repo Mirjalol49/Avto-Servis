@@ -67,8 +67,8 @@ export function FileUploadZone({
       <label
         htmlFor={inputId}
         className={cn(
-          "flex min-h-36 cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border border-dashed bg-background p-4 text-center transition-colors hover:bg-muted/50",
-          file && "border-solid"
+          "flex min-h-36 cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-primary/25 bg-primary/5 p-4 text-center transition-colors hover:bg-primary/10",
+          file && "border-solid border-primary/30 bg-primary/10"
         )}
         onDragOver={(event) => event.preventDefault()}
         onDrop={(event) => {

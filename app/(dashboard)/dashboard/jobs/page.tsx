@@ -65,7 +65,7 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
       <JobSearch defaultValue={search} />
 
       {jobs.length > 0 ? (
-        <div className="rounded-xl bg-card ring-1 ring-foreground/10">
+        <div className="overflow-hidden rounded-xl border border-white/10 bg-card/80">
           <Table>
             <TableHeader>
               <TableRow>

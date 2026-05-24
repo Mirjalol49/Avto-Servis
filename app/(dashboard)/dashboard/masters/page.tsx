@@ -76,11 +76,11 @@ export default async function MastersPage({ searchParams }: MastersPageProps) {
                     {formatUzbekPhone(master.phone)}
                   </div>
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-lg border p-3">
+                    <div className="rounded-lg border border-white/10 bg-muted/30 p-3">
                       <div className="text-xs text-muted-foreground">Active jobs</div>
                       <div className="text-lg font-semibold">{master.activeJobsCount}</div>
                     </div>
-                    <div className="rounded-lg border p-3">
+                    <div className="rounded-lg border border-white/10 bg-muted/30 p-3">
                       <div className="text-xs text-muted-foreground">Completed</div>
                       <div className="text-lg font-semibold">{master.completedJobsCount}</div>
                     </div>
@@ -90,8 +90,8 @@ export default async function MastersPage({ searchParams }: MastersPageProps) {
                     className={cn(
                       "w-fit",
                       master.isActive
-                        ? "border-green-200 bg-green-50 text-green-700"
-                        : "border-red-200 bg-red-50 text-red-700"
+                        ? "border-emerald-400/25 bg-emerald-400/10 text-emerald-200"
+                        : "border-rose-400/25 bg-rose-400/10 text-rose-200"
                     )}
                   >
                     {master.isActive ? "Active" : "Inactive"}

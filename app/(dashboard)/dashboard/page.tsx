@@ -32,13 +32,15 @@ function KpiCard({ title, value, subtitle, icon: Icon }: KpiCardProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between gap-3 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
+        <CardTitle className="font-mono text-xs font-medium uppercase tracking-[0.05em] text-muted-foreground">
           {title}
         </CardTitle>
-        <Icon className="text-muted-foreground" />
+        <div className="flex size-9 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-primary shadow-[0_0_24px_rgba(208,188,255,0.16)]">
+          <Icon className="size-4" />
+        </div>
       </CardHeader>
       <CardContent>
-        <div className="text-3xl font-semibold">{value}</div>
+        <div className="font-heading text-4xl font-bold leading-tight">{value}</div>
         <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
       </CardContent>
     </Card>
@@ -106,7 +108,7 @@ export default async function DashboardPage() {
                 {stats.topMasters.map((master, index) => (
                   <div
                     key={master.id || master.name}
-                    className="flex items-center justify-between gap-3 rounded-lg border p-3"
+                    className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-muted/30 p-3"
                   >
                     <div className="flex min-w-0 items-center gap-3">
                       <div className="font-mono text-sm text-muted-foreground">
@@ -132,7 +134,7 @@ export default async function DashboardPage() {
                 ))}
               </div>
             ) : (
-              <div className="rounded-lg border p-6 text-center text-sm text-muted-foreground">
+              <div className="rounded-lg border border-white/10 bg-muted/30 p-6 text-center text-sm text-muted-foreground">
                 No completed master jobs this month.
               </div>
             )}
@@ -150,7 +152,7 @@ export default async function DashboardPage() {
                   <Link
                     key={job.id}
                     href={`/dashboard/jobs/${job.id}`}
-                    className="flex items-center justify-between gap-3 rounded-lg border p-3 transition-colors hover:bg-muted"
+                    className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-muted/30 p-3 transition-colors hover:bg-accent/50"
                   >
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
@@ -167,7 +169,7 @@ export default async function DashboardPage() {
                 ))}
               </div>
             ) : (
-              <div className="rounded-lg border p-6 text-center text-sm text-muted-foreground">
+              <div className="rounded-lg border border-white/10 bg-muted/30 p-6 text-center text-sm text-muted-foreground">
                 No job orders yet.
               </div>
             )}
@@ -178,10 +180,10 @@ export default async function DashboardPage() {
       {stats.lowStockParts > 0 || stats.activeJobsCount > 10 ? (
         <div className="grid gap-3 lg:grid-cols-2">
           {stats.lowStockParts > 0 ? (
-            <Alert className="border-yellow-200 bg-yellow-50 text-yellow-900">
+            <Alert className="border-amber-400/25 bg-amber-400/10 text-amber-100">
               <AlertCircleIcon />
               <AlertTitle>Stock alert</AlertTitle>
-              <AlertDescription>
+              <AlertDescription className="text-amber-100/85">
                 ⚠ {stats.lowStockParts} parts are running low on stock.{" "}
                 <Link href="/dashboard/parts">Review inventory</Link>
               </AlertDescription>

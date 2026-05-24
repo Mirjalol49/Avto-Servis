@@ -138,7 +138,7 @@ export function JobCostingSection({
       </CardHeader>
       <CardContent>
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem]">
-          <div className="rounded-lg border">
+          <div className="overflow-hidden rounded-lg border border-white/10 bg-muted/25">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -185,7 +185,7 @@ export function JobCostingSection({
             </Table>
           </div>
 
-          <div className="h-fit rounded-lg border p-4 xl:sticky xl:top-20">
+          <div className="h-fit rounded-lg border border-primary/20 bg-primary/10 p-4 shadow-[0_0_32px_rgba(208,188,255,0.08)] xl:sticky xl:top-20">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Parts Total</span>
               <span className="font-medium">{formatCurrency(partsTotal, currency)}</span>

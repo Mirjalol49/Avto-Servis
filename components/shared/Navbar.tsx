@@ -8,15 +8,27 @@ export async function Navbar() {
   const session = await getServerSession(authOptions);
 
   return (
-    <header className="flex h-14 shrink-0 items-center justify-between border-b bg-background px-4">
-      <div className="font-heading text-base font-semibold">AutoServis</div>
+    <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between border-b border-white/10 bg-background/80 px-4 backdrop-blur-xl md:px-6">
+      <div className="flex items-center gap-3">
+        <div className="flex size-9 items-center justify-center rounded-lg border border-primary/25 bg-primary/10 font-heading text-sm font-bold text-primary shadow-[0_0_28px_rgba(208,188,255,0.18)]">
+          AS
+        </div>
+        <div>
+          <div className="font-heading text-base font-semibold leading-tight">AutoServis</div>
+          <div className="hidden font-mono text-[11px] uppercase tracking-[0.05em] text-muted-foreground sm:block">
+            Service Command
+          </div>
+        </div>
+      </div>
       {session?.user ? (
         <div className="flex items-center gap-3">
           <div className="hidden text-right sm:block">
-            <div className="text-sm font-medium">{session.user.name}</div>
-            <div className="text-xs text-muted-foreground">{session.user.email}</div>
+            <div className="text-sm font-medium leading-tight">{session.user.name}</div>
+            <div className="font-mono text-[11px] text-muted-foreground">{session.user.email}</div>
           </div>
-          <Badge variant="secondary">{session.user.role}</Badge>
+          <Badge variant="secondary" className="border-primary/20 bg-primary/10 text-primary">
+            {session.user.role}
+          </Badge>
           <SignOutButton />
         </div>
       ) : null}

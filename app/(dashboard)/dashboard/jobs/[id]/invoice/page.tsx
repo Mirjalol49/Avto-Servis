@@ -47,10 +47,10 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
 
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-4">
-      <div className="rounded-xl bg-card p-6 ring-1 ring-foreground/10 print:ring-0">
-        <header className="flex flex-col gap-4 border-b pb-6 sm:flex-row sm:items-start sm:justify-between">
+      <div className="rounded-xl border border-white/10 bg-card/80 p-6 backdrop-blur-xl print:border-0">
+        <header className="flex flex-col gap-4 border-b border-white/10 pb-6 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex size-12 items-center justify-center rounded-lg bg-primary text-lg font-bold text-primary-foreground">
+            <div className="flex size-12 items-center justify-center rounded-lg border border-primary/25 bg-primary/10 text-lg font-bold text-primary shadow-[0_0_28px_rgba(208,188,255,0.18)]">
               AS
             </div>
             <div>
@@ -68,14 +68,14 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
         </header>
 
         <section className="grid gap-4 py-6 md:grid-cols-2">
-          <div className="rounded-lg border p-4">
+          <div className="rounded-lg border border-white/10 bg-muted/30 p-4">
             <div className="mb-3 text-sm font-medium text-muted-foreground">Customer</div>
             <div className="font-semibold">{customer.name}</div>
             <div className="text-sm text-muted-foreground">
               {formatUzbekPhone(customer.phone)}
             </div>
           </div>
-          <div className="rounded-lg border p-4">
+          <div className="rounded-lg border border-white/10 bg-muted/30 p-4">
             <div className="mb-3 text-sm font-medium text-muted-foreground">Car</div>
             <div className="font-semibold">{car.plateNumber}</div>
             <div className="text-sm text-muted-foreground">
@@ -87,7 +87,7 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
           </div>
         </section>
 
-        <div className="rounded-lg border">
+        <div className="overflow-hidden rounded-lg border border-white/10">
           <Table>
             <TableHeader>
               <TableRow>
@@ -145,15 +145,15 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
           </div>
         </section>
 
-        <section className="mt-6 flex flex-col gap-3 border-t pt-6 sm:flex-row sm:items-center sm:justify-between">
+        <section className="mt-6 flex flex-col gap-3 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col gap-2">
             <Badge
               variant="outline"
               className={cn(
                 "w-fit px-4 py-1 text-base",
                 invoice.isPaid
-                  ? "border-green-200 bg-green-50 text-green-700"
-                  : "border-yellow-200 bg-yellow-50 text-yellow-800"
+                  ? "border-emerald-400/25 bg-emerald-400/10 text-emerald-200"
+                  : "border-amber-400/25 bg-amber-400/10 text-amber-200"
               )}
             >
               {invoice.isPaid ? "PAID" : "UNPAID"}

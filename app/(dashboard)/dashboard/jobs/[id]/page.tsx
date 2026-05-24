@@ -60,7 +60,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-4 rounded-xl bg-card p-4 ring-1 ring-foreground/10">
+      <div className="flex flex-col gap-4 rounded-xl border border-white/10 bg-card/80 p-4 backdrop-blur-xl">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
           <div className="flex flex-col gap-2">
             <div className="flex flex-wrap items-center gap-2">
@@ -104,7 +104,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 lg:grid-cols-2">
-            <div className="rounded-lg border p-3">
+            <div className="rounded-lg border border-white/10 bg-muted/30 p-3">
               <div className="mb-2 text-sm font-medium">Problem description</div>
               <p className="text-sm leading-relaxed text-muted-foreground">
                 {job.problemDescription}
