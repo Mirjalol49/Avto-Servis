@@ -1,43 +1,68 @@
 import { getServerSession } from "next-auth";
 import Link from "next/link";
-import { PaletteIcon, ShieldIcon, UsersIcon } from "lucide-react";
+import { LanguagesIcon, PaletteIcon, ShieldIcon, UsersIcon } from "lucide-react";
 
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { ThemeSettings } from "@/components/settings/ThemeSettings";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { authOptions } from "@/lib/auth/options";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { cn } from "@/lib/utils";
 
 export default async function SettingsPage() {
   const session = await getServerSession(authOptions);
   const isAdmin = session?.user.role === "ADMIN";
+  const locale = getLocale();
+  const dictionary = getDictionary();
 
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="font-heading text-2xl font-semibold">Settings</h1>
+        <h1 className="font-heading text-2xl font-semibold">{dictionary.settings.title}</h1>
         <p className="text-sm text-muted-foreground">
-          Manage appearance, access, and workspace preferences.
+          {dictionary.settings.description}
         </p>
       </div>
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)]">
-        <ThemeSettings />
+        <ThemeSettings labels={{ ...dictionary.settings, useSystem: dictionary.common.useSystem }} />
 
         <div className="flex flex-col gap-4">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <PaletteIcon />
-                Interface
+                {dictionary.settings.interface}
               </CardTitle>
               <CardDescription>
-                Theme choices are saved in this browser.
+                {dictionary.settings.interfaceDescription}
               </CardDescription>
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
-              Light mode uses the Indigo Insight Update palette. Dark mode uses
-              the original Indigo Insight palette.
+              {dictionary.settings.interfaceBody}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <LanguagesIcon />
+                {dictionary.settings.languageTitle}
+              </CardTitle>
+              <CardDescription>
+                {dictionary.settings.languageDescription}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-3">
+              <LanguageSwitcher
+                currentLocale={locale}
+                labels={dictionary.common.languages}
+                title={dictionary.common.currentLanguage}
+              />
+              <p className="text-sm text-muted-foreground">
+                {dictionary.settings.languageBody}
+              </p>
             </CardContent>
           </Card>
 
@@ -45,10 +70,10 @@ export default async function SettingsPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <ShieldIcon />
-                Access
+                {dictionary.settings.access}
               </CardTitle>
               <CardDescription>
-                Admin-only user management stays under Settings.
+                {dictionary.settings.accessDescription}
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-3">
@@ -58,11 +83,11 @@ export default async function SettingsPage() {
                   className={cn(buttonVariants(), "w-fit")}
                 >
                   <UsersIcon data-icon="inline-start" />
-                  Manage users
+                  {dictionary.settings.manageUsers}
                 </Link>
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  Ask an admin to create, edit, or review user accounts.
+                  {dictionary.settings.nonAdminAccess}
                 </p>
               )}
             </CardContent>

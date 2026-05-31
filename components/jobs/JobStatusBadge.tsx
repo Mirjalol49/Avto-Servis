@@ -1,7 +1,7 @@
 import type { JobStatus } from "@prisma/client";
 
 import { Badge } from "@/components/ui/badge";
-import { jobStatusLabels } from "@/lib/jobs/status";
+import { getDictionary } from "@/lib/i18n/server";
 import { cn } from "@/lib/utils";
 
 const statusClasses: Record<JobStatus, string> = {
@@ -14,9 +14,11 @@ const statusClasses: Record<JobStatus, string> = {
 };
 
 export function JobStatusBadge({ status }: { status: JobStatus }) {
+  const dictionary = getDictionary();
+
   return (
     <Badge variant="outline" className={cn(statusClasses[status])}>
-      {jobStatusLabels[status]}
+      {dictionary.jobs.statuses[status]}
     </Badge>
   );
 }

@@ -1,4 +1,4 @@
-import { formatDistanceToNow } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 import {
   AlertCircleIcon,
   BanknoteIcon,
@@ -17,6 +17,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { jobStatusFlow, shortJobId } from "@/lib/jobs/status";
+import { getDateFnsLocale } from "@/lib/i18n/date";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { formatCurrency, getCurrency } from "@/lib/money";
 
 export const dynamic = "force-dynamic";
@@ -50,57 +52,77 @@ function KpiCard({ title, value, subtitle, icon: Icon }: KpiCardProps) {
 export default async function DashboardPage() {
   const stats = await getDashboardStats();
   const currency = getCurrency();
+  const locale = getLocale();
+  const dictionary = getDictionary();
+  const dateLocale = getDateFnsLocale(locale);
   const jobsByStatus = jobStatusFlow.map((status) => ({
     status,
     count: stats.jobsByStatus[status],
   }));
+  const revenueByDay = stats.revenueByDay.map((point) => ({
+    ...point,
+    label: format(new Date(`${point.date}T00:00:00.000`), "MMM dd", {
+      locale: dateLocale,
+    }),
+  }));
 
   return (
-    <DashboardAutoRefresh lastUpdatedAt={stats.lastUpdatedAt}>
+    <DashboardAutoRefresh
+      lastUpdatedAt={stats.lastUpdatedAt}
+      lastUpdatedLabel={dictionary.dashboard.lastUpdated}
+      locale={locale}
+    >
       <div>
-        <h1 className="font-heading text-2xl font-semibold">Dashboard</h1>
+        <h1 className="font-heading text-2xl font-semibold">{dictionary.dashboard.title}</h1>
         <p className="text-sm text-muted-foreground">
-          Service operations, revenue, workload, and inventory alerts.
+          {dictionary.dashboard.description}
         </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <KpiCard
-          title="Today's Jobs"
+          title={dictionary.dashboard.todaysJobs}
           value={stats.todayJobsCount}
-          subtitle="Job orders opened today"
+          subtitle={dictionary.dashboard.todaysJobsSubtitle}
           icon={CalendarDaysIcon}
         />
         <KpiCard
-          title="Active Jobs"
+          title={dictionary.dashboard.activeJobs}
           value={stats.activeJobsCount}
-          subtitle="Currently in service"
+          subtitle={dictionary.dashboard.activeJobsSubtitle}
           icon={BriefcaseBusinessIcon}
         />
         <KpiCard
-          title="Today's Revenue"
+          title={dictionary.dashboard.todaysRevenue}
           value={formatCurrency(stats.todayRevenue)}
-          subtitle="Paid invoices today"
+          subtitle={dictionary.dashboard.todaysRevenueSubtitle}
           icon={BanknoteIcon}
         />
         <KpiCard
-          title="Month Revenue"
+          title={dictionary.dashboard.monthRevenue}
           value={formatCurrency(stats.monthRevenue)}
-          subtitle="This month"
+          subtitle={dictionary.dashboard.monthRevenueSubtitle}
           icon={UsersIcon}
         />
       </div>
 
       <DashboardChartsLoader
-        revenueByDay={stats.revenueByDay}
+        revenueByDay={revenueByDay}
         jobsByStatus={jobsByStatus}
         currency={currency}
+        labels={{
+          revenueLast30Days: dictionary.dashboard.revenueLast30Days,
+          jobsByStatus: dictionary.dashboard.jobsByStatus,
+          revenue: dictionary.dashboard.revenue,
+          jobs: dictionary.common.jobs,
+          statuses: dictionary.jobs.statuses,
+        }}
       />
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Top Masters This Month</CardTitle>
+            <CardTitle>{dictionary.dashboard.topMastersThisMonth}</CardTitle>
           </CardHeader>
           <CardContent>
             {stats.topMasters.length > 0 ? (
@@ -118,13 +140,13 @@ export default async function DashboardPage() {
                       <div className="min-w-0">
                         <div className="truncate font-medium">{master.name}</div>
                         <div className="truncate text-sm text-muted-foreground">
-                          {master.specialization ?? "No specialization"}
+                          {master.specialization ?? dictionary.common.noSpecialization}
                         </div>
                       </div>
                     </div>
                     <div className="text-right">
                       <Badge variant="secondary">
-                        {master.completedJobsCount} jobs
+                        {dictionary.dashboard.completedJobsBadge(master.completedJobsCount)}
                       </Badge>
                       <div className="mt-1 text-sm font-medium">
                         {formatCurrency(master.revenue)}
@@ -135,7 +157,7 @@ export default async function DashboardPage() {
               </div>
             ) : (
               <div className="rounded-lg border border-white/10 bg-muted/30 p-6 text-center text-sm text-muted-foreground">
-                No completed master jobs this month.
+                {dictionary.dashboard.noCompletedMasterJobs}
               </div>
             )}
           </CardContent>
@@ -143,7 +165,7 @@ export default async function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Recent Job Orders</CardTitle>
+            <CardTitle>{dictionary.dashboard.recentJobOrders}</CardTitle>
           </CardHeader>
           <CardContent>
             {stats.recentJobs.length > 0 ? (
@@ -161,7 +183,7 @@ export default async function DashboardPage() {
                       </div>
                       <div className="truncate text-sm text-muted-foreground">
                         {job.car.customer.name} ·{" "}
-                        {formatDistanceToNow(job.createdAt, { addSuffix: true })}
+                        {formatDistanceToNow(job.createdAt, { addSuffix: true, locale: dateLocale })}
                       </div>
                     </div>
                     <JobStatusBadge status={job.status} />
@@ -170,7 +192,7 @@ export default async function DashboardPage() {
               </div>
             ) : (
               <div className="rounded-lg border border-white/10 bg-muted/30 p-6 text-center text-sm text-muted-foreground">
-                No job orders yet.
+                {dictionary.dashboard.noJobOrdersYet}
               </div>
             )}
           </CardContent>
@@ -182,19 +204,19 @@ export default async function DashboardPage() {
           {stats.lowStockParts > 0 ? (
             <Alert className="border-amber-400/25 bg-amber-400/10 text-amber-100">
               <AlertCircleIcon />
-              <AlertTitle>Stock alert</AlertTitle>
+              <AlertTitle>{dictionary.dashboard.stockAlert}</AlertTitle>
               <AlertDescription className="text-amber-100/85">
-                ⚠ {stats.lowStockParts} parts are running low on stock.{" "}
-                <Link href="/dashboard/parts">Review inventory</Link>
+                {dictionary.dashboard.stockAlertText(stats.lowStockParts)}{" "}
+                <Link href="/dashboard/parts">{dictionary.dashboard.reviewInventory}</Link>
               </AlertDescription>
             </Alert>
           ) : null}
           {stats.activeJobsCount > 10 ? (
             <Alert>
               <AlertCircleIcon />
-              <AlertTitle>High workload</AlertTitle>
+              <AlertTitle>{dictionary.dashboard.highWorkload}</AlertTitle>
               <AlertDescription>
-                ℹ {stats.activeJobsCount} jobs currently active — high load
+                {dictionary.dashboard.highWorkloadText(stats.activeJobsCount)}
               </AlertDescription>
             </Alert>
           ) : null}

@@ -19,7 +19,7 @@ function DashboardChartsFallback() {
     <div className="grid gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(320px,2fr)]">
       <Card>
         <CardHeader>
-          <CardTitle>Revenue Last 30 Days</CardTitle>
+          <CardTitle>...</CardTitle>
         </CardHeader>
         <CardContent>
           <Skeleton className="h-80 w-full" />
@@ -27,7 +27,7 @@ function DashboardChartsFallback() {
       </Card>
       <Card>
         <CardHeader>
-          <CardTitle>Jobs by Status</CardTitle>
+          <CardTitle>...</CardTitle>
         </CardHeader>
         <CardContent>
           <Skeleton className="h-80 w-full" />

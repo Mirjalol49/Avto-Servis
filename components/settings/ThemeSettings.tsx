@@ -8,28 +8,39 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
-const themeOptions = [
+type ThemeSettingsLabels = {
+  appearance: string;
+  appearanceDescription: string;
+  currentResolvedMode: string;
+  systemRendersAs: string;
+  useSystem: string;
+  themeOptions: {
+    light: { label: string; description: string };
+    dark: { label: string; description: string };
+    system: { label: string; description: string };
+  };
+  resolvedModes: {
+    light: string;
+    dark: string;
+  };
+};
+
+const themeOptionMeta = [
   {
     value: "light",
-    label: "Light",
-    description: "Paper-white workspace for daytime operations.",
     icon: SunIcon,
   },
   {
     value: "dark",
-    label: "Dark",
-    description: "Deep indigo workspace for low-light environments.",
     icon: MoonIcon,
   },
   {
     value: "system",
-    label: "System",
-    description: "Follow this device automatically.",
     icon: MonitorIcon,
   },
 ] as const;
 
-export function ThemeSettings() {
+export function ThemeSettings({ labels }: { labels: ThemeSettingsLabels }) {
   const { resolvedTheme, setTheme, theme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -38,21 +49,23 @@ export function ThemeSettings() {
   }, []);
 
   const activeTheme = mounted ? theme ?? "system" : "system";
-  const resolvedLabel = mounted && resolvedTheme === "dark" ? "Dark" : "Light";
+  const resolvedMode = mounted && resolvedTheme === "dark" ? "dark" : "light";
+  const resolvedLabel = labels.resolvedModes[resolvedMode];
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Appearance</CardTitle>
+        <CardTitle>{labels.appearance}</CardTitle>
         <CardDescription>
-          Choose how AutoServis looks on this device.
+          {labels.appearanceDescription}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <div className="grid gap-3 lg:grid-cols-3">
-          {themeOptions.map((option) => {
+          {themeOptionMeta.map((option) => {
             const Icon = option.icon;
             const isActive = activeTheme === option.value;
+            const optionLabels = labels.themeOptions[option.value];
 
             return (
               <button
@@ -70,10 +83,10 @@ export function ThemeSettings() {
                 </span>
                 <span>
                   <span className="block font-heading text-base font-semibold">
-                    {option.label}
+                    {optionLabels.label}
                   </span>
                   <span className="mt-1 block text-sm text-muted-foreground">
-                    {option.description}
+                    {optionLabels.description}
                   </span>
                 </span>
               </button>
@@ -83,14 +96,14 @@ export function ThemeSettings() {
 
         <div className="flex flex-col gap-2 rounded-lg border border-border bg-muted/45 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <div className="font-medium">Current resolved mode</div>
+            <div className="font-medium">{labels.currentResolvedMode}</div>
             <div className="text-sm text-muted-foreground">
-              System preference currently renders as {resolvedLabel}.
+              {labels.systemRendersAs.replace("{mode}", resolvedLabel)}
             </div>
           </div>
           <Button type="button" variant="outline" onClick={() => setTheme("system")}>
             <MonitorIcon data-icon="inline-start" />
-            Use system
+            {labels.useSystem}
           </Button>
         </div>
       </CardContent>

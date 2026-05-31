@@ -13,17 +13,18 @@ import {
   SettingsIcon,
 } from "lucide-react";
 
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: GaugeIcon },
-  { href: "/dashboard/customers", label: "Customers", icon: UsersIcon },
-  { href: "/dashboard/cars", label: "Cars", icon: CarIcon },
-  { href: "/dashboard/jobs", label: "Job Orders", icon: ClipboardListIcon },
-  { href: "/dashboard/masters", label: "Masters", icon: WrenchIcon },
-  { href: "/dashboard/parts", label: "Parts", icon: PackageIcon },
-  { href: "/dashboard/reports", label: "Reports", icon: BarChart3Icon },
-  { href: "/dashboard/settings", label: "Settings", icon: SettingsIcon },
+  { href: "/dashboard", labelKey: "dashboard", icon: GaugeIcon },
+  { href: "/dashboard/customers", labelKey: "customers", icon: UsersIcon },
+  { href: "/dashboard/cars", labelKey: "cars", icon: CarIcon },
+  { href: "/dashboard/jobs", labelKey: "jobs", icon: ClipboardListIcon },
+  { href: "/dashboard/masters", labelKey: "masters", icon: WrenchIcon },
+  { href: "/dashboard/parts", labelKey: "parts", icon: PackageIcon },
+  { href: "/dashboard/reports", labelKey: "reports", icon: BarChart3Icon },
+  { href: "/dashboard/settings", labelKey: "settings", icon: SettingsIcon },
 ] as const;
 
 function isActiveRoute(pathname: string, href: string) {
@@ -32,16 +33,21 @@ function isActiveRoute(pathname: string, href: string) {
     : pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function Sidebar() {
+type SidebarLabels = {
+  common: Pick<Dictionary["common"], "serviceErp" | "operations">;
+  nav: Dictionary["nav"];
+};
+
+export function Sidebar({ labels }: { labels: SidebarLabels }) {
   const pathname = usePathname();
 
   return (
     <aside className="hidden w-72 shrink-0 border-r border-border bg-sidebar/90 backdrop-blur-xl md:block">
       <div className="flex h-16 items-center border-b border-border px-4">
         <div>
-          <span className="font-heading text-sm font-semibold text-sidebar-foreground">Service ERP</span>
+          <span className="font-heading text-sm font-semibold text-sidebar-foreground">{labels.common.serviceErp}</span>
           <div className="font-mono text-[11px] uppercase tracking-[0.05em] text-muted-foreground">
-            Operations
+            {labels.common.operations}
           </div>
         </div>
       </div>
@@ -61,7 +67,7 @@ export function Sidebar() {
               )}
             >
               <Icon className="size-4" />
-              {item.label}
+              {labels.nav[item.labelKey]}
             </Link>
           );
         })}
@@ -70,7 +76,7 @@ export function Sidebar() {
   );
 }
 
-export function MobileSidebarNav() {
+export function MobileSidebarNav({ labels }: { labels: SidebarLabels }) {
   const pathname = usePathname();
 
   return (
@@ -90,7 +96,7 @@ export function MobileSidebarNav() {
             )}
           >
             <Icon className="size-4" />
-            {item.label}
+            {labels.nav[item.labelKey]}
           </Link>
         );
       })}

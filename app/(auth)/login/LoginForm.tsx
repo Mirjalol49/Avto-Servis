@@ -16,7 +16,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { loginSchema, type LoginInput } from "@/lib/auth/validation";
 
-export function LoginForm() {
+type LoginFormLabels = {
+  email: string;
+  password: string;
+  invalidCredentials: string;
+  signingIn: string;
+  signIn: string;
+};
+
+export function LoginForm({ labels }: { labels: LoginFormLabels }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +46,7 @@ export function LoginForm() {
     });
 
     if (!result || result.error) {
-      setError("Invalid email or password.");
+      setError(labels.invalidCredentials);
       return;
     }
 
@@ -50,7 +58,7 @@ export function LoginForm() {
     <form onSubmit={form.handleSubmit(onSubmit)} noValidate>
       <FieldGroup>
         <Field data-invalid={Boolean(form.formState.errors.email)}>
-          <FieldLabel htmlFor="email">Email</FieldLabel>
+          <FieldLabel htmlFor="email">{labels.email}</FieldLabel>
           <Input
             id="email"
             type="email"
@@ -62,7 +70,7 @@ export function LoginForm() {
         </Field>
 
         <Field data-invalid={Boolean(form.formState.errors.password)}>
-          <FieldLabel htmlFor="password">Password</FieldLabel>
+          <FieldLabel htmlFor="password">{labels.password}</FieldLabel>
           <Input
             id="password"
             type="password"
@@ -84,7 +92,7 @@ export function LoginForm() {
           className="w-full"
           disabled={form.formState.isSubmitting}
         >
-          {form.formState.isSubmitting ? "Signing in..." : "Sign in"}
+          {form.formState.isSubmitting ? labels.signingIn : labels.signIn}
         </Button>
       </FieldGroup>
     </form>

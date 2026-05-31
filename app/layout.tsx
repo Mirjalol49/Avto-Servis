@@ -5,6 +5,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
+import { getLocale } from "@/lib/i18n/server";
 
 const hanken = Hanken_Grotesk({
   subsets: ["latin"],
@@ -34,9 +35,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = getLocale();
+
   return (
     <html
-      lang="en"
+      lang={locale}
       suppressHydrationWarning
       className={`${hanken.variable} ${inter.variable} ${jetbrainsMono.variable} ${GeistSans.variable}`}
     >

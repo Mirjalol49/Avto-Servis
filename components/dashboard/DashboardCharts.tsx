@@ -17,7 +17,6 @@ import {
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { jobStatusLabels } from "@/lib/jobs/status";
 import { formatCurrency } from "@/lib/money";
 
 export type RevenuePoint = {
@@ -35,6 +34,13 @@ export type DashboardChartsProps = {
   revenueByDay: RevenuePoint[];
   jobsByStatus: StatusPoint[];
   currency: string;
+  labels: {
+    revenueLast30Days: string;
+    jobsByStatus: string;
+    revenue: string;
+    jobs: string;
+    statuses: Record<JobStatus, string>;
+  };
 };
 
 type ChartSize = {
@@ -107,12 +113,13 @@ export function DashboardCharts({
   revenueByDay,
   jobsByStatus,
   currency,
+  labels,
 }: DashboardChartsProps) {
   const [mounted, setMounted] = useState(false);
   const [revenueChartRef, revenueChartSize] = useChartSize();
   const [statusChartRef, statusChartSize] = useChartSize();
   const pieData = jobsByStatus.map((item) => ({
-    name: jobStatusLabels[item.status],
+    name: labels.statuses[item.status],
     value: item.count,
     status: item.status,
   }));
@@ -125,7 +132,7 @@ export function DashboardCharts({
     <div className="grid gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(320px,2fr)]">
       <Card>
         <CardHeader>
-          <CardTitle>Revenue Last 30 Days</CardTitle>
+          <CardTitle>{labels.revenueLast30Days}</CardTitle>
         </CardHeader>
         <CardContent>
           <div ref={revenueChartRef} className="h-80 min-w-0">
@@ -159,7 +166,7 @@ export function DashboardCharts({
                   contentStyle={tooltipStyle}
                   formatter={(value) => [
                     formatCurrency(Number(value), currency),
-                    "Revenue",
+                    labels.revenue,
                   ]}
                   labelFormatter={(_, payload) => {
                     const point = payload?.[0]?.payload as RevenuePoint | undefined;
@@ -187,7 +194,7 @@ export function DashboardCharts({
 
       <Card>
         <CardHeader>
-          <CardTitle>Jobs by Status</CardTitle>
+          <CardTitle>{labels.jobsByStatus}</CardTitle>
         </CardHeader>
         <CardContent>
           <div ref={statusChartRef} className="h-80 min-w-0">
@@ -208,7 +215,7 @@ export function DashboardCharts({
                 </Pie>
                 <Tooltip
                   contentStyle={tooltipStyle}
-                  formatter={(value) => [Number(value), "Jobs"]}
+                  formatter={(value) => [Number(value), labels.jobs]}
                 />
                 <Legend verticalAlign="bottom" height={48} wrapperStyle={legendStyle} />
               </PieChart>
