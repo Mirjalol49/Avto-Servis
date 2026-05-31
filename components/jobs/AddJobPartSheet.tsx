@@ -45,9 +45,15 @@ type AddJobPartSheetProps = {
   jobId: string;
   parts: AvailablePartOption[];
   currency: string;
+  disabled?: boolean;
 };
 
-export function AddJobPartSheet({ jobId, parts, currency }: AddJobPartSheetProps) {
+export function AddJobPartSheet({
+  jobId,
+  parts,
+  currency,
+  disabled = false,
+}: AddJobPartSheetProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -95,7 +101,7 @@ export function AddJobPartSheet({ jobId, parts, currency }: AddJobPartSheetProps
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger
         render={
-          <Button type="button" variant="outline">
+          <Button type="button" variant="outline" disabled={disabled}>
             <PlusIcon data-icon="inline-start" />
             Add Part
           </Button>
@@ -203,7 +209,7 @@ export function AddJobPartSheet({ jobId, parts, currency }: AddJobPartSheetProps
           </div>
 
           <SheetFooter>
-            <Button type="submit" disabled={form.formState.isSubmitting}>
+            <Button type="submit" disabled={disabled || form.formState.isSubmitting}>
               {form.formState.isSubmitting ? (
                 <Loader2Icon data-icon="inline-start" className="animate-spin" />
               ) : null}

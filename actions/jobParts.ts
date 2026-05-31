@@ -4,6 +4,10 @@ import { revalidatePath } from "next/cache";
 
 import { createAuditLog } from "@/lib/audit/log";
 import { requireReception } from "@/lib/auth/permissions";
+import {
+  assertCanApproveEstimate,
+  assertCanEditJobCosts,
+} from "@/lib/jobs/status";
 import { calculatePartsTotal } from "@/lib/money";
 import { addJobPartSchema } from "@/lib/parts/validation";
 import { prisma } from "@/lib/prisma";
@@ -12,43 +16,6 @@ function revalidateJobCostPaths(jobOrderId: string) {
   revalidatePath(`/dashboard/jobs/${jobOrderId}`);
   revalidatePath("/dashboard/jobs");
   revalidatePath("/dashboard/parts");
-}
-
-async function recalculateJobCosts(jobOrderId: string) {
-  const job = await prisma.jobOrder.findUnique({
-    where: {
-      id: jobOrderId,
-    },
-    select: {
-      serviceFee: true,
-      parts: {
-        select: {
-          quantity: true,
-          unitPrice: true,
-        },
-      },
-    },
-  });
-
-  if (!job) {
-    throw new Error("Job order not found");
-  }
-
-  const partsTotal = calculatePartsTotal(job.parts);
-  const serviceFee = Number(job.serviceFee);
-  const total = partsTotal + serviceFee;
-
-  await prisma.jobOrder.update({
-    where: {
-      id: jobOrderId,
-    },
-    data: {
-      estimatedCost: total,
-      totalCost: total,
-    },
-  });
-
-  return { partsTotal, serviceFee, total };
 }
 
 export async function getAvailableParts() {
@@ -73,6 +40,32 @@ export async function addPartToJob(
 
   const parsed = addJobPartSchema.parse(data);
   const result = await prisma.$transaction(async (tx) => {
+    const job = await tx.jobOrder.findUnique({
+      where: {
+        id: jobOrderId,
+      },
+      select: {
+        status: true,
+        approvedByCustomer: true,
+        serviceFee: true,
+        invoice: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+
+    if (!job) {
+      throw new Error("Job order not found");
+    }
+
+    assertCanEditJobCosts({
+      status: job.status,
+      approvedByCustomer: job.approvedByCustomer,
+      hasInvoice: Boolean(job.invoice),
+    });
+
     const part = await tx.part.findUnique({
       where: {
         id: parsed.partId,
@@ -102,12 +95,27 @@ export async function addPartToJob(
       },
     });
 
-    const updatedPart = await tx.part.update({
+    const stockUpdate = await tx.part.updateMany({
       where: {
         id: part.id,
+        stockQty: {
+          gte: parsed.quantity,
+        },
       },
       data: {
-        stockQty: part.stockQty - parsed.quantity,
+        stockQty: {
+          decrement: parsed.quantity,
+        },
+      },
+    });
+
+    if (stockUpdate.count !== 1) {
+      throw new Error("Insufficient stock");
+    }
+
+    const updatedPart = await tx.part.findUniqueOrThrow({
+      where: {
+        id: part.id,
       },
       select: {
         name: true,
@@ -115,7 +123,7 @@ export async function addPartToJob(
       },
     });
 
-    const job = await tx.jobOrder.findUnique({
+    const updatedJob = await tx.jobOrder.findUnique({
       where: {
         id: jobOrderId,
       },
@@ -130,12 +138,12 @@ export async function addPartToJob(
       },
     });
 
-    if (!job) {
+    if (!updatedJob) {
       throw new Error("Job order not found");
     }
 
-    const partsTotal = calculatePartsTotal(job.parts);
-    const total = partsTotal + Number(job.serviceFee);
+    const partsTotal = calculatePartsTotal(updatedJob.parts);
+    const total = partsTotal + Number(updatedJob.serviceFee);
 
     await tx.jobOrder.update({
       where: {
@@ -182,12 +190,29 @@ export async function removePartFromJob(jobPartId: string) {
         jobOrderId: true,
         partId: true,
         quantity: true,
+        jobOrder: {
+          select: {
+            status: true,
+            approvedByCustomer: true,
+            invoice: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        },
       },
     });
 
     if (!jobPart) {
       throw new Error("Job part not found");
     }
+
+    assertCanEditJobCosts({
+      status: jobPart.jobOrder.status,
+      approvedByCustomer: jobPart.jobOrder.approvedByCustomer,
+      hasInvoice: Boolean(jobPart.jobOrder.invoice),
+    });
 
     await tx.jobPart.delete({
       where: {
@@ -264,15 +289,52 @@ export async function updateJobServiceFee(jobOrderId: string, serviceFee: number
     throw new Error("Service fee cannot be negative");
   }
 
-  await prisma.jobOrder.update({
-    where: {
-      id: jobOrderId,
-    },
-    data: {
-      serviceFee,
-    },
+  await prisma.$transaction(async (tx) => {
+    const job = await tx.jobOrder.findUnique({
+      where: {
+        id: jobOrderId,
+      },
+      select: {
+        status: true,
+        approvedByCustomer: true,
+        invoice: {
+          select: {
+            id: true,
+          },
+        },
+        parts: {
+          select: {
+            quantity: true,
+            unitPrice: true,
+          },
+        },
+      },
+    });
+
+    if (!job) {
+      throw new Error("Job order not found");
+    }
+
+    assertCanEditJobCosts({
+      status: job.status,
+      approvedByCustomer: job.approvedByCustomer,
+      hasInvoice: Boolean(job.invoice),
+    });
+
+    const partsTotal = calculatePartsTotal(job.parts);
+    const total = partsTotal + serviceFee;
+
+    await tx.jobOrder.update({
+      where: {
+        id: jobOrderId,
+      },
+      data: {
+        serviceFee,
+        estimatedCost: total,
+        totalCost: total,
+      },
+    });
   });
-  await recalculateJobCosts(jobOrderId);
   revalidateJobCostPaths(jobOrderId);
   await createAuditLog({
     user: actor,
@@ -287,6 +349,31 @@ export async function updateJobServiceFee(jobOrderId: string, serviceFee: number
 
 export async function approveEstimate(jobOrderId: string) {
   const actor = await requireReception();
+
+  const job = await prisma.jobOrder.findUnique({
+    where: {
+      id: jobOrderId,
+    },
+    select: {
+      status: true,
+      diagnosisNotes: true,
+      invoice: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  });
+
+  if (!job) {
+    throw new Error("Job order not found");
+  }
+
+  assertCanApproveEstimate({
+    status: job.status,
+    hasDiagnosis: Boolean(job.diagnosisNotes),
+    hasInvoice: Boolean(job.invoice),
+  });
 
   await prisma.jobOrder.update({
     where: {

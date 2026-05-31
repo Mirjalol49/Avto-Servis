@@ -60,6 +60,7 @@ type JobCostingSectionProps = {
   approvedByCustomer: boolean;
   status: string;
   invoiceId: string | null;
+  costsLocked: boolean;
   currency: string;
 };
 
@@ -71,6 +72,7 @@ export function JobCostingSection({
   approvedByCustomer,
   status,
   invoiceId,
+  costsLocked,
   currency,
 }: JobCostingSectionProps) {
   const router = useRouter();
@@ -133,6 +135,7 @@ export function JobCostingSection({
             jobId={jobId}
             parts={availableParts}
             currency={currency}
+            disabled={costsLocked}
           />
         </CardAction>
       </CardHeader>
@@ -165,7 +168,7 @@ export function JobCostingSection({
                           variant="ghost"
                           size="icon-sm"
                           className="text-destructive"
-                          disabled={removingId === part.id}
+                          disabled={costsLocked || removingId === part.id}
                           onClick={() => handleRemove(part.id)}
                         >
                           <Trash2Icon />
@@ -194,7 +197,11 @@ export function JobCostingSection({
               <label className="mb-2 block text-sm text-muted-foreground">
                 Service Fee
               </label>
-              <ServiceFeeInput jobId={jobId} defaultValue={serviceFee} />
+              <ServiceFeeInput
+                jobId={jobId}
+                defaultValue={serviceFee}
+                disabled={costsLocked}
+              />
             </div>
             <Separator className="my-4" />
             <div className="flex items-center justify-between">
@@ -228,7 +235,7 @@ export function JobCostingSection({
                   <Button
                     type="button"
                     className="mt-4 w-full"
-                    disabled={approvedByCustomer}
+                    disabled={approvedByCustomer || status !== "DIAGNOSED" || Boolean(invoiceId)}
                   />
                 }
               >

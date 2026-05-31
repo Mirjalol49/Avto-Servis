@@ -22,6 +22,7 @@ export type JobTransitionContext = {
   hasDiagnosis: boolean;
   approvedByCustomer: boolean;
   hasAfterPhoto: boolean;
+  hasPaidInvoice: boolean;
 };
 
 function statusIndex(status: JobStatus) {
@@ -71,6 +72,14 @@ export function assertCanTransitionJobStatus(
   ) {
     throw new Error("At least one after photo is required before completion");
   }
+
+  if (
+    currentStatus === "COMPLETED" &&
+    nextStatus === "DELIVERED" &&
+    !context.hasPaidInvoice
+  ) {
+    throw new Error("Paid invoice is required before delivery");
+  }
 }
 
 export function getNextJobStatuses(
@@ -94,4 +103,70 @@ export function getNextJobStatuses(
 
 export function shortJobId(id: string) {
   return `#JO-${id.slice(-4).toUpperCase()}`;
+}
+
+export function assertCanSaveDiagnosis(status: JobStatus) {
+  if (status !== "WAITING" && status !== "DIAGNOSED") {
+    throw new Error("Diagnosis can only be saved before customer approval");
+  }
+}
+
+export function assertCanApproveEstimate({
+  status,
+  hasDiagnosis,
+  hasInvoice,
+}: {
+  status: JobStatus;
+  hasDiagnosis: boolean;
+  hasInvoice: boolean;
+}) {
+  if (hasInvoice) {
+    throw new Error("Invoice already exists for this job");
+  }
+
+  if (status !== "DIAGNOSED") {
+    throw new Error("Estimate can only be approved after diagnosis");
+  }
+
+  if (!hasDiagnosis) {
+    throw new Error("Diagnosis notes are required before customer approval");
+  }
+}
+
+export function assertCanEditJobCosts({
+  status,
+  approvedByCustomer,
+  hasInvoice,
+}: {
+  status: JobStatus;
+  approvedByCustomer: boolean;
+  hasInvoice: boolean;
+}) {
+  if (hasInvoice || approvedByCustomer || status === "COMPLETED" || status === "DELIVERED") {
+    throw new Error(
+      "Job costs are locked after customer approval, completion, delivery, or invoice generation"
+    );
+  }
+}
+
+export function assertCanGenerateInvoice(status: JobStatus) {
+  if (status !== "COMPLETED") {
+    throw new Error("Invoice can only be generated after the job is completed");
+  }
+}
+
+export function assertCanMarkInvoicePaid({
+  isPaid,
+  jobStatus,
+}: {
+  isPaid: boolean;
+  jobStatus: JobStatus;
+}) {
+  if (isPaid) {
+    throw new Error("Invoice is already paid");
+  }
+
+  if (jobStatus !== "COMPLETED") {
+    throw new Error("Only completed jobs can be paid and delivered");
+  }
 }

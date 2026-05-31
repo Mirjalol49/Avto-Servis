@@ -10,6 +10,10 @@ import {
   toSerializableInvoice,
 } from "@/lib/invoices/data";
 import { paymentMethodSchema, type PaymentMethod } from "@/lib/invoices/validation";
+import {
+  assertCanGenerateInvoice,
+  assertCanMarkInvoicePaid,
+} from "@/lib/jobs/status";
 import { calculatePartsTotal } from "@/lib/money";
 import { prisma } from "@/lib/prisma";
 
@@ -34,6 +38,7 @@ export async function generateInvoice(jobOrderId: string) {
         id: jobOrderId,
       },
       select: {
+        status: true,
         serviceFee: true,
         parts: {
           select: {
@@ -47,6 +52,8 @@ export async function generateInvoice(jobOrderId: string) {
     if (!job) {
       throw new Error("Job order not found");
     }
+
+    assertCanGenerateInvoice(job.status);
 
     const partsTotal = calculatePartsTotal(job.parts);
     const serviceFee = Number(job.serviceFee);
@@ -100,23 +107,49 @@ export async function markAsPaid(invoiceId: string, paymentMethod: PaymentMethod
   const actor = await requireReception();
 
   const parsedPaymentMethod = paymentMethodSchema.parse(paymentMethod);
-  const updatedInvoice = await prisma.invoice.update({
-    where: {
-      id: invoiceId,
-    },
-    data: {
-      isPaid: true,
-      paymentMethod: parsedPaymentMethod,
-      paidAt: new Date(),
-      jobOrder: {
-        update: {
-          status: "DELIVERED",
+  const updatedInvoice = await prisma.$transaction(async (tx) => {
+    const invoice = await tx.invoice.findUnique({
+      where: {
+        id: invoiceId,
+      },
+      select: {
+        isPaid: true,
+        jobOrderId: true,
+        jobOrder: {
+          select: {
+            status: true,
+          },
         },
       },
-    },
-    select: {
-      jobOrderId: true,
-    },
+    });
+
+    if (!invoice) {
+      throw new Error("Invoice could not be loaded");
+    }
+
+    assertCanMarkInvoicePaid({
+      isPaid: invoice.isPaid,
+      jobStatus: invoice.jobOrder.status,
+    });
+
+    return tx.invoice.update({
+      where: {
+        id: invoiceId,
+      },
+      data: {
+        isPaid: true,
+        paymentMethod: parsedPaymentMethod,
+        paidAt: new Date(),
+        jobOrder: {
+          update: {
+            status: "DELIVERED",
+          },
+        },
+      },
+      select: {
+        jobOrderId: true,
+      },
+    });
   });
   const invoice = await getInvoiceRecordById(invoiceId);
 

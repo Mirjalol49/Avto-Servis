@@ -51,10 +51,16 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
 
   const groupedPhotos = photosByType(job.photos);
   const afterPhotosVisible = jobStatusFlow.indexOf(job.status) >= jobStatusFlow.indexOf("IN_PROGRESS");
+  const costsLocked =
+    Boolean(job.invoice) ||
+    job.approvedByCustomer ||
+    job.status === "COMPLETED" ||
+    job.status === "DELIVERED";
   const nextStatuses = getNextJobStatuses(job.status, {
     hasDiagnosis: Boolean(job.diagnosisNotes),
     approvedByCustomer: job.approvedByCustomer,
     hasAfterPhoto: groupedPhotos.AFTER.length > 0,
+    hasPaidInvoice: Boolean(job.invoice?.isPaid),
   });
   const currency = getCurrency();
 
@@ -160,6 +166,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
         approvedByCustomer={job.approvedByCustomer}
         status={job.status}
         invoiceId={job.invoice?.id ?? null}
+        costsLocked={costsLocked}
         currency={currency}
       />
     </div>

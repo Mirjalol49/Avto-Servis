@@ -17,6 +17,7 @@ import {
   type DiagnosisInput,
 } from "@/lib/jobs/validation";
 import {
+  assertCanSaveDiagnosis,
   assertCanTransitionJobStatus,
   jobStatusFlow,
 } from "@/lib/jobs/status";
@@ -283,8 +284,6 @@ export async function updateJobStatus(id: string, status: JobStatus) {
       status: true,
       diagnosisNotes: true,
       approvedByCustomer: true,
-      serviceFee: true,
-      totalCost: true,
       photos: {
         where: {
           type: "AFTER",
@@ -296,12 +295,7 @@ export async function updateJobStatus(id: string, status: JobStatus) {
       invoice: {
         select: {
           id: true,
-        },
-      },
-      parts: {
-        select: {
-          quantity: true,
-          unitPrice: true,
+          isPaid: true,
         },
       },
     },
@@ -315,6 +309,7 @@ export async function updateJobStatus(id: string, status: JobStatus) {
     hasDiagnosis: Boolean(job.diagnosisNotes),
     approvedByCustomer: job.approvedByCustomer,
     hasAfterPhoto: job.photos.length > 0,
+    hasPaidInvoice: Boolean(job.invoice?.isPaid),
   });
 
   const updatedJob = await prisma.jobOrder.update({
@@ -325,23 +320,6 @@ export async function updateJobStatus(id: string, status: JobStatus) {
       status,
     },
   });
-
-  if (status === "DELIVERED" && !job.invoice) {
-    const partsTotal = job.parts.reduce((total, part) => {
-      return total + Number(part.unitPrice) * part.quantity;
-    }, 0);
-    const serviceFee = Number(job.serviceFee);
-    const totalAmount = Number(job.totalCost ?? partsTotal + serviceFee);
-
-    await prisma.invoice.create({
-      data: {
-        jobOrderId: id,
-        partsTotal,
-        serviceFee,
-        totalAmount,
-      },
-    });
-  }
 
   revalidateJobPaths(id);
   await createAuditLog({
@@ -364,6 +342,21 @@ export async function addDiagnosis(id: string, data: DiagnosisInput) {
   const parsed = diagnosisSchema.parse(data);
 
   await assertAssignableMaster(parsed.masterId);
+
+  const existingJob = await prisma.jobOrder.findUnique({
+    where: {
+      id,
+    },
+    select: {
+      status: true,
+    },
+  });
+
+  if (!existingJob) {
+    throw new Error("Job order not found");
+  }
+
+  assertCanSaveDiagnosis(existingJob.status);
 
   const job = await prisma.jobOrder.update({
     where: {
