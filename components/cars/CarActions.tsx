@@ -32,6 +32,8 @@ type CarActionsProps = {
   customers: CarCustomerOption[];
   car: {
     id: string;
+    name: string | null;
+    carImageUrl: string | null;
     plateNumber: string;
     plateImageUrl: string;
     attachmentUrl: string | null;

@@ -1,11 +1,20 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { format } from "date-fns";
-import { ClipboardListIcon, DownloadIcon, FileTextIcon, PlusIcon } from "lucide-react";
+import {
+  CalendarDaysIcon,
+  ClipboardListIcon,
+  DownloadIcon,
+  FileTextIcon,
+  PlusIcon,
+  UserIcon,
+  WrenchIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { getCarById } from "@/actions/cars";
+import { JobStatusBadge } from "@/components/jobs/JobStatusBadge";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -24,6 +33,8 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { formatUzbekPhone } from "@/lib/customers/validation";
+import { shortJobId } from "@/lib/jobs/status";
+import { formatCurrency, getCurrency } from "@/lib/money";
 import { cn } from "@/lib/utils";
 
 type CarDetailPageProps = {
@@ -34,12 +45,12 @@ type CarDetailPageProps = {
 
 export const dynamic = "force-dynamic";
 
-function formatMoney(value: unknown) {
+function formatMoney(value: unknown, currency: string) {
   if (value === null || value === undefined) {
     return "-";
   }
 
-  return `${Number(value).toLocaleString("en-US")} UZS`;
+  return formatCurrency(Number(value), currency);
 }
 
 function fileNameFromUrl(url: string) {
@@ -49,18 +60,6 @@ function fileNameFromUrl(url: string) {
   return decodeURIComponent(segments[segments.length - 1] ?? "document");
 }
 
-function statusVariant(status: string) {
-  if (status === "COMPLETED" || status === "DELIVERED") {
-    return "default" as const;
-  }
-
-  if (status === "IN_PROGRESS" || status === "APPROVED") {
-    return "secondary" as const;
-  }
-
-  return "outline" as const;
-}
-
 export default async function CarDetailPage({ params }: CarDetailPageProps) {
   const car = await getCarById(params.id);
 
@@ -68,33 +67,89 @@ export default async function CarDetailPage({ params }: CarDetailPageProps) {
     notFound();
   }
 
+  const currency = getCurrency();
+  const lastJob = car.jobOrders[0];
+
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="font-heading text-2xl font-semibold">{car.plateNumber}</h1>
-        <p className="text-sm text-muted-foreground">
-          Vehicle profile, documents, and job orders.
-        </p>
+      <div className="overflow-hidden rounded-2xl border border-border bg-card">
+        <div className="grid lg:grid-cols-[minmax(0,1.15fr)_minmax(360px,0.85fr)]">
+          <a
+            href={car.carImageUrl ?? car.plateImageUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="relative block min-h-72 overflow-hidden bg-muted"
+          >
+            <img
+              src={car.carImageUrl ?? car.plateImageUrl}
+              alt={`${car.name ?? car.plateNumber} vehicle`}
+              className="size-full object-cover"
+            />
+            <div className="absolute left-4 top-4 rounded-lg border border-white/20 bg-black/60 px-3 py-1.5 font-mono text-sm font-semibold text-white backdrop-blur">
+              {car.plateNumber}
+            </div>
+          </a>
+
+          <div className="flex flex-col justify-between gap-6 p-5 sm:p-6">
+            <div>
+              <div className="mb-3 flex flex-wrap items-center gap-2">
+                <Badge variant="secondary">Vehicle profile</Badge>
+                {lastJob ? <JobStatusBadge status={lastJob.status} /> : null}
+              </div>
+              <h1 className="font-heading text-3xl font-semibold">
+                {car.name ?? "Vehicle profile"}
+              </h1>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Service history, documents, owner, and repair activity for this vehicle.
+              </p>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="rounded-xl border border-border bg-muted/35 p-3">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <UserIcon className="size-4" />
+                  Owner
+                </div>
+                <div className="mt-1 font-medium">{car.customer.name}</div>
+                <div className="text-sm text-muted-foreground">
+                  {formatUzbekPhone(car.customer.phone)}
+                </div>
+              </div>
+              <div className="rounded-xl border border-border bg-muted/35 p-3">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <ClipboardListIcon className="size-4" />
+                  Jobs
+                </div>
+                <div className="mt-1 font-heading text-2xl font-semibold">
+                  {car.jobOrders.length}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {lastJob ? `Last visit ${format(lastJob.createdAt, "dd MMM yyyy")}` : "No visits yet"}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <Link
+                href={`/dashboard/jobs/new?carId=${car.id}`}
+                className={cn(buttonVariants())}
+              >
+                <PlusIcon data-icon="inline-start" />
+                New Job Order
+              </Link>
+              <Link
+                href={`/dashboard/customers/${car.customer.id}`}
+                className={cn(buttonVariants({ variant: "outline" }))}
+              >
+                Owner profile
+              </Link>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(340px,0.9fr)]">
         <div className="flex flex-col gap-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Plate image</CardTitle>
-              <CardDescription>Photo of the physical plate</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <a href={car.plateImageUrl} target="_blank" rel="noreferrer">
-                <img
-                  src={car.plateImageUrl}
-                  alt={`${car.plateNumber} plate`}
-                  className="aspect-video w-full rounded-xl object-cover"
-                />
-              </a>
-            </CardContent>
-          </Card>
-
           <Card>
             <CardHeader>
               <CardTitle>Attachment</CardTitle>
@@ -174,9 +229,9 @@ export default async function CarDetailPage({ params }: CarDetailPageProps) {
         <section className="flex flex-col gap-3">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h2 className="font-heading text-lg font-semibold">Job Orders</h2>
+              <h2 className="font-heading text-lg font-semibold">Service History</h2>
               <p className="text-sm text-muted-foreground">
-                Service work linked to this car.
+                Dated repair records linked to this car. Open any record for the full job page.
               </p>
             </div>
             <Link
@@ -191,26 +246,68 @@ export default async function CarDetailPage({ params }: CarDetailPageProps) {
           {car.jobOrders.length > 0 ? (
             <div className="flex flex-col gap-3">
               {car.jobOrders.map((jobOrder) => (
-                <Card key={jobOrder.id}>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Badge variant={statusVariant(jobOrder.status)}>
-                        {jobOrder.status.replace(/_/g, " ")}
-                      </Badge>
-                    </CardTitle>
-                    <CardDescription>
-                      {format(jobOrder.createdAt, "dd MMM yyyy")}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-col gap-2">
-                      <p className="text-sm">{jobOrder.problemDescription}</p>
-                      <div className="text-sm font-medium">
-                        {formatMoney(jobOrder.totalCost)}
+                <Link
+                  key={jobOrder.id}
+                  href={`/dashboard/jobs/${jobOrder.id}`}
+                  className="block rounded-xl border border-border bg-card p-4 transition-colors hover:bg-accent/45"
+                >
+                  <div className="flex flex-col gap-4">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-mono text-xs text-muted-foreground">
+                            {shortJobId(jobOrder.id)}
+                          </span>
+                          <JobStatusBadge status={jobOrder.status} />
+                        </div>
+                        <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+                          <CalendarDaysIcon className="size-4" />
+                          {format(jobOrder.createdAt, "dd MMM yyyy, HH:mm")}
+                        </div>
+                      </div>
+                      <div className="text-right text-sm font-semibold">
+                        {formatMoney(jobOrder.totalCost ?? jobOrder.estimatedCost, currency)}
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
+
+                    <div>
+                      <div className="text-sm font-medium">What happened</div>
+                      <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                        {jobOrder.problemDescription}
+                      </p>
+                      {jobOrder.diagnosisNotes ? (
+                        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                          Diagnosis: {jobOrder.diagnosisNotes}
+                        </p>
+                      ) : null}
+                    </div>
+
+                    <div className="grid gap-2 text-sm sm:grid-cols-3">
+                      <div className="rounded-lg border border-border bg-muted/35 p-2.5">
+                        <div className="flex items-center gap-1.5 text-muted-foreground">
+                          <WrenchIcon className="size-4" />
+                          Master
+                        </div>
+                        <div className="mt-1 font-medium">
+                          {jobOrder.master?.name ?? "Unassigned"}
+                        </div>
+                        {jobOrder.master?.specialization ? (
+                          <div className="text-xs text-muted-foreground">
+                            {jobOrder.master.specialization}
+                          </div>
+                        ) : null}
+                      </div>
+                      <div className="rounded-lg border border-border bg-muted/35 p-2.5">
+                        <div className="text-muted-foreground">Parts used</div>
+                        <div className="mt-1 font-medium">{jobOrder._count.parts}</div>
+                      </div>
+                      <div className="rounded-lg border border-border bg-muted/35 p-2.5">
+                        <div className="text-muted-foreground">Photos</div>
+                        <div className="mt-1 font-medium">{jobOrder._count.photos}</div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
               ))}
             </div>
           ) : (

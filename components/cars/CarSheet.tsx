@@ -35,10 +35,13 @@ import {
   carFormSchema,
   PLATE_NUMBER_HINT,
   type CarFormData,
+  type CarFormInput,
 } from "@/lib/cars/validation";
 
 type EditableCar = {
   id: string;
+  name: string | null;
+  carImageUrl: string | null;
   plateNumber: string;
   plateImageUrl: string;
   attachmentUrl: string | null;
@@ -58,14 +61,16 @@ export function CarSheet({ customers, car, trigger }: CarSheetProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [open, setOpen] = useState(searchParams.get("customerId") !== null && !car);
+  const [carImage, setCarImage] = useState<File | null>(null);
   const [plateImage, setPlateImage] = useState<File | null>(null);
   const [attachment, setAttachment] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [stage, setStage] = useState<SubmitStage>("idle");
   const defaultCustomerId = searchParams.get("customerId") ?? "";
-  const form = useForm<CarFormData>({
+  const form = useForm<CarFormInput, unknown, CarFormData>({
     resolver: zodResolver(carFormSchema),
     defaultValues: {
+      name: car?.name ?? "",
       plateNumber: car?.plateNumber ?? "",
       customerId: car?.customerId ?? defaultCustomerId,
     },
@@ -91,8 +96,13 @@ export function CarSheet({ customers, car, trigger }: CarSheetProps) {
     }
 
     const formData = new FormData();
+    formData.set("name", values.name ?? "");
     formData.set("plateNumber", values.plateNumber);
     formData.set("customerId", values.customerId);
+
+    if (carImage) {
+      formData.set("carImage", carImage);
+    }
 
     if (plateImage) {
       formData.set("plateImage", plateImage);
@@ -112,6 +122,7 @@ export function CarSheet({ customers, car, trigger }: CarSheetProps) {
       }
 
       toast.success("Car saved successfully");
+      setCarImage(null);
       setPlateImage(null);
       setAttachment(null);
       setOpen(false);
@@ -162,6 +173,21 @@ export function CarSheet({ customers, car, trigger }: CarSheetProps) {
                 )}
               />
 
+              <Field data-invalid={Boolean(form.formState.errors.name)}>
+                <FieldLabel htmlFor="car-name">Car Name</FieldLabel>
+                <Input
+                  id="car-name"
+                  autoComplete="off"
+                  placeholder="e.g. Malibu, Cobalt, Nexia"
+                  aria-invalid={Boolean(form.formState.errors.name)}
+                  {...form.register("name")}
+                />
+                <FieldDescription>
+                  Optional model/name shown on vehicle cards.
+                </FieldDescription>
+                <FieldError errors={[form.formState.errors.name]} />
+              </Field>
+
               <Field data-invalid={Boolean(form.formState.errors.plateNumber)}>
                 <FieldLabel htmlFor="plate-number">Plate Number</FieldLabel>
                 <Input
@@ -177,6 +203,14 @@ export function CarSheet({ customers, car, trigger }: CarSheetProps) {
                 <FieldDescription>{PLATE_NUMBER_HINT}</FieldDescription>
                 <FieldError errors={[form.formState.errors.plateNumber]} />
               </Field>
+
+              <FileUploadZone
+                label="Car Image"
+                accept="image/jpeg,image/png,image/webp"
+                file={carImage}
+                currentUrl={car?.carImageUrl}
+                onFileChange={setCarImage}
+              />
 
               <FileUploadZone
                 label="Plate Image"

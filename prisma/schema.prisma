@@ -38,6 +38,8 @@ model Customer {
 
 model Car {
   id             String     @id @default(cuid())
+  name           String?
+  carImageUrl    String?
   plateNumber    String     @unique
   plateImageUrl  String
   attachmentUrl  String?

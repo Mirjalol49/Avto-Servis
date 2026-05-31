@@ -24,6 +24,11 @@ export const plateNumberSchema = z
   });
 
 export const carFormSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .max(80, "Car name must be 80 characters or fewer")
+    .transform((value) => (value.length > 0 ? value : null)),
   plateNumber: plateNumberSchema,
   customerId: z.string().min(1, "Customer is required"),
 });
@@ -77,3 +82,4 @@ export function getFileFromFormData(formData: FormData, key: string) {
 }
 
 export type CarFormData = z.infer<typeof carFormSchema>;
+export type CarFormInput = z.input<typeof carFormSchema>;

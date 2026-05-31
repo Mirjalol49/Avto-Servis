@@ -31,6 +31,7 @@ async function deleteFiles(urls: string[]) {
 
 function parseCarFormData(formData: FormData) {
   return carFormSchema.parse({
+    name: String(formData.get("name") ?? ""),
     plateNumber: String(formData.get("plateNumber") ?? ""),
     customerId: String(formData.get("customerId") ?? ""),
   });
@@ -57,6 +58,12 @@ export async function getCars(search?: string) {
       ? {
           OR: [
             {
+              name: {
+                contains: trimmedSearch,
+                mode: "insensitive",
+              },
+            },
+            {
               plateNumber: {
                 contains: trimmedSearch.replace(/[^a-zA-Z0-9]/g, "").toUpperCase(),
                 mode: "insensitive",
@@ -78,6 +85,8 @@ export async function getCars(search?: string) {
     },
     select: {
       id: true,
+      name: true,
+      carImageUrl: true,
       plateNumber: true,
       plateImageUrl: true,
       attachmentUrl: true,
@@ -105,6 +114,8 @@ export async function getCarById(id: string) {
     },
     select: {
       id: true,
+      name: true,
+      carImageUrl: true,
       plateNumber: true,
       plateImageUrl: true,
       attachmentUrl: true,
@@ -126,7 +137,24 @@ export async function getCarById(id: string) {
           status: true,
           createdAt: true,
           problemDescription: true,
+          diagnosisNotes: true,
+          serviceFee: true,
+          estimatedCost: true,
           totalCost: true,
+          updatedAt: true,
+          master: {
+            select: {
+              id: true,
+              name: true,
+              specialization: true,
+            },
+          },
+          _count: {
+            select: {
+              parts: true,
+              photos: true,
+            },
+          },
         },
       },
     },
@@ -137,6 +165,7 @@ export async function createCar(formData: FormData) {
   const actor = await requireReception();
 
   const parsed = parseCarFormData(formData);
+  const carImage = getFileFromFormData(formData, "carImage");
   const plateImage = getFileFromFormData(formData, "plateImage");
   const attachment = getFileFromFormData(formData, "attachment");
 
@@ -145,6 +174,10 @@ export async function createCar(formData: FormData) {
   }
 
   validateUploadFile(plateImage, { imageOnly: true });
+
+  if (carImage) {
+    validateUploadFile(carImage, { imageOnly: true });
+  }
 
   if (attachment) {
     validateUploadFile(attachment);
@@ -173,6 +206,14 @@ export async function createCar(formData: FormData) {
     );
     uploadedUrls.push(plateImageUrl);
 
+    const carImageUrl = carImage
+      ? await uploadFile(carImage, carFilesBucket, "car-images")
+      : null;
+
+    if (carImageUrl) {
+      uploadedUrls.push(carImageUrl);
+    }
+
     const attachmentUrl = attachment
       ? await uploadFile(attachment, carFilesBucket, "attachments")
       : null;
@@ -183,6 +224,8 @@ export async function createCar(formData: FormData) {
 
     const car = await prisma.car.create({
       data: {
+        name: parsed.name,
+        carImageUrl,
         plateNumber: parsed.plateNumber,
         plateImageUrl,
         attachmentUrl,
@@ -213,8 +256,13 @@ export async function updateCar(id: string, formData: FormData) {
   const actor = await requireReception();
 
   const parsed = parseCarFormData(formData);
+  const carImage = getFileFromFormData(formData, "carImage");
   const plateImage = getFileFromFormData(formData, "plateImage");
   const attachment = getFileFromFormData(formData, "attachment");
+
+  if (carImage) {
+    validateUploadFile(carImage, { imageOnly: true });
+  }
 
   if (plateImage) {
     validateUploadFile(plateImage, { imageOnly: true });
@@ -253,6 +301,14 @@ export async function updateCar(id: string, formData: FormData) {
   const uploadedUrls: string[] = [];
 
   try {
+    const carImageUrl = carImage
+      ? await uploadFile(carImage, carFilesBucket, "car-images")
+      : existingCar.carImageUrl;
+
+    if (carImage && carImageUrl) {
+      uploadedUrls.push(carImageUrl);
+    }
+
     const plateImageUrl = plateImage
       ? await uploadFile(plateImage, carFilesBucket, "plate-images")
       : existingCar.plateImageUrl;
@@ -274,6 +330,8 @@ export async function updateCar(id: string, formData: FormData) {
         id,
       },
       data: {
+        name: parsed.name,
+        carImageUrl,
         plateNumber: parsed.plateNumber,
         customerId: parsed.customerId,
         plateImageUrl,
@@ -285,6 +343,7 @@ export async function updateCar(id: string, formData: FormData) {
     });
 
     const replacedUrls = [
+      carImage ? existingCar.carImageUrl : null,
       plateImage ? existingCar.plateImageUrl : null,
       attachment ? existingCar.attachmentUrl : null,
     ].filter((url): url is string => Boolean(url));
@@ -316,6 +375,7 @@ export async function deleteCar(id: string) {
       id,
     },
     select: {
+      carImageUrl: true,
       plateImageUrl: true,
       attachmentUrl: true,
     },
@@ -332,8 +392,8 @@ export async function deleteCar(id: string) {
   });
 
   await deleteFiles(
-    [car.plateImageUrl, car.attachmentUrl].filter((url): url is string =>
-      Boolean(url)
+    [car.carImageUrl, car.plateImageUrl, car.attachmentUrl].filter(
+      (url): url is string => Boolean(url)
     )
   );
   revalidateCarPaths(id);
