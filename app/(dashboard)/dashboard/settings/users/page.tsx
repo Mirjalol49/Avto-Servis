@@ -19,6 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { requireAdmin } from "@/lib/auth/permissions";
+import { formatUzbekPhone } from "@/lib/customers/validation";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -38,6 +39,7 @@ export default async function UsersSettingsPage() {
       id: true,
       name: true,
       email: true,
+      phone: true,
       role: true,
     },
   });
@@ -65,6 +67,7 @@ export default async function UsersSettingsPage() {
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Email</TableHead>
+                <TableHead>Phone</TableHead>
                 <TableHead>Role</TableHead>
               </TableRow>
             </TableHeader>
@@ -75,6 +78,9 @@ export default async function UsersSettingsPage() {
                     <TableCell className="font-medium">{user.name}</TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>
+                      {user.phone ? formatUzbekPhone(user.phone) : "Not set"}
+                    </TableCell>
+                    <TableCell>
                       <Badge variant="secondary">{user.role}</Badge>
                     </TableCell>
                   </TableRow>
@@ -82,7 +88,7 @@ export default async function UsersSettingsPage() {
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={3}
+                    colSpan={4}
                     className="h-24 text-center text-muted-foreground"
                   >
                     No users found.

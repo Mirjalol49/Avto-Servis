@@ -53,6 +53,7 @@ export function UserCreateDialog() {
     defaultValues: {
       name: "",
       email: "",
+      phone: "",
       password: "",
       role: "RECEPTIONIST",
     },
@@ -116,6 +117,20 @@ export function UserCreateDialog() {
                 {...form.register("email")}
               />
               <FieldError errors={[form.formState.errors.email]} />
+            </Field>
+
+            <Field data-invalid={Boolean(form.formState.errors.phone)}>
+              <FieldLabel htmlFor="new-user-phone">Phone</FieldLabel>
+              <Input
+                id="new-user-phone"
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                placeholder="937489141"
+                aria-invalid={Boolean(form.formState.errors.phone)}
+                {...form.register("phone")}
+              />
+              <FieldError errors={[form.formState.errors.phone]} />
             </Field>
 
             <Field data-invalid={Boolean(form.formState.errors.password)}>

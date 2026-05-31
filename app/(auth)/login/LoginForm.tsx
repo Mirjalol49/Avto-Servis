@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { loginSchema, type LoginInput } from "@/lib/auth/validation";
 
 type LoginFormLabels = {
-  email: string;
+  phone: string;
   password: string;
   invalidCredentials: string;
   signingIn: string;
@@ -31,7 +31,7 @@ export function LoginForm({ labels }: { labels: LoginFormLabels }) {
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
+      phone: "",
       password: "",
     },
   });
@@ -40,7 +40,7 @@ export function LoginForm({ labels }: { labels: LoginFormLabels }) {
     setError(null);
 
     const result = await signIn("credentials", {
-      email: values.email,
+      phone: values.phone,
       password: values.password,
       redirect: false,
     });
@@ -57,16 +57,18 @@ export function LoginForm({ labels }: { labels: LoginFormLabels }) {
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} noValidate>
       <FieldGroup>
-        <Field data-invalid={Boolean(form.formState.errors.email)}>
-          <FieldLabel htmlFor="email">{labels.email}</FieldLabel>
+        <Field data-invalid={Boolean(form.formState.errors.phone)}>
+          <FieldLabel htmlFor="phone">{labels.phone}</FieldLabel>
           <Input
-            id="email"
-            type="email"
-            autoComplete="email"
-            aria-invalid={Boolean(form.formState.errors.email)}
-            {...form.register("email")}
+            id="phone"
+            type="tel"
+            autoComplete="tel"
+            inputMode="tel"
+            placeholder="937489141"
+            aria-invalid={Boolean(form.formState.errors.phone)}
+            {...form.register("phone")}
           />
-          <FieldError errors={[form.formState.errors.email]} />
+          <FieldError errors={[form.formState.errors.phone]} />
         </Field>
 
         <Field data-invalid={Boolean(form.formState.errors.password)}>

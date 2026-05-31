@@ -28,7 +28,7 @@ export type Dictionary = {
   };
   auth: {
     signInSubtitle: string;
-    email: string;
+    phone: string;
     password: string;
     invalidCredentials: string;
     signingIn: string;
@@ -127,7 +127,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     },
     auth: {
       signInSubtitle: "Servis operatsiyalarini boshqarish uchun tizimga kiring.",
-      email: "Email",
+      phone: "Telefon raqam",
       password: "Parol",
       invalidCredentials: "Email yoki parol noto'g'ri.",
       signingIn: "Kirilmoqda...",
@@ -241,7 +241,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     },
     auth: {
       signInSubtitle: "Sign in to manage service operations.",
-      email: "Email",
+      phone: "Phone number",
       password: "Password",
       invalidCredentials: "Invalid email or password.",
       signingIn: "Signing in...",
@@ -355,7 +355,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     },
     auth: {
       signInSubtitle: "Войдите, чтобы управлять сервисными операциями.",
-      email: "Email",
+      phone: "Телефон",
       password: "Пароль",
       invalidCredentials: "Неверный email или пароль.",
       signingIn: "Вход...",

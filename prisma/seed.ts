@@ -4,6 +4,8 @@ import { resolve } from "node:path";
 import { PrismaClient } from "@prisma/client";
 import { hash } from "bcryptjs";
 
+import { normalizeAuthPhone } from "../lib/auth/phone";
+
 function loadEnvFile(filePath: string) {
   if (!existsSync(filePath)) {
     return;
@@ -51,10 +53,28 @@ async function main() {
   const email = requireEnv("ADMIN_EMAIL").toLowerCase();
   const password = requireEnv("ADMIN_PASSWORD");
   const name = process.env.ADMIN_NAME?.trim() || "Admin";
+  const rawPhone = process.env.ADMIN_PHONE?.trim();
+  const phone = rawPhone ? normalizeAuthPhone(rawPhone) : null;
   const resetPassword = process.env.ADMIN_RESET_PASSWORD === "true";
+
+  if (rawPhone && !phone) {
+    throw new Error("ADMIN_PHONE must be a valid Uzbek phone number");
+  }
+
   const existingUser = await prisma.user.findFirst({
     where: {
-      email,
+      OR: [
+        {
+          email,
+        },
+        ...(phone
+          ? [
+              {
+                phone,
+              },
+            ]
+          : []),
+      ],
     },
     select: {
       id: true,
@@ -69,6 +89,8 @@ async function main() {
       },
       data: {
         name,
+        email,
+        ...(phone ? { phone } : {}),
         role: "ADMIN",
         ...(resetPassword ? { password: await hash(password, 12) } : {}),
       },
@@ -86,6 +108,7 @@ async function main() {
     data: {
       name,
       email,
+      phone,
       password: await hash(password, 12),
       role: "ADMIN",
     },

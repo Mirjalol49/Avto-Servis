@@ -18,6 +18,7 @@ export type CreateUserResult =
         id: string;
         name: string;
         email: string;
+        phone: string | null;
         role: CreateUserInput["role"];
       };
     }
@@ -42,14 +43,21 @@ export async function createUser(
 
   const existingUser = await prisma.user.findFirst({
     where: {
-      email: parsed.data.email,
+      OR: [
+        {
+          email: parsed.data.email,
+        },
+        {
+          phone: parsed.data.phone,
+        },
+      ],
     },
   });
 
   if (existingUser) {
     return {
       ok: false,
-      message: "A user with this email already exists.",
+      message: "A user with this email or phone already exists.",
     };
   }
 
@@ -58,6 +66,7 @@ export async function createUser(
     data: {
       name: parsed.data.name,
       email: parsed.data.email,
+      phone: parsed.data.phone,
       password,
       role: parsed.data.role,
     },
@@ -65,6 +74,7 @@ export async function createUser(
       id: true,
       name: true,
       email: true,
+      phone: true,
       role: true,
     },
   });
@@ -77,6 +87,7 @@ export async function createUser(
     entityId: user.id,
     metadata: {
       email: user.email,
+      phone: user.phone,
       role: user.role,
     },
   });
